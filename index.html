@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculadora científica y académica de tamaño de muestra para poblaciones finitas con desglose matemático paso a paso y tabla comparativa.">
+  <title>Calculadora de Tamaño de Muestra | Poblaciones Finitas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-container">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="title-group">
+          <span class="badge-tag">Estadística Inferencial</span>
+          <h1>Calculadora de Tamaño de Muestra</h1>
+          <p class="subtitle">Determinación del tamaño muestral para estimación de proporciones en poblaciones finitas.</p>
+        </div>
+        <div class="header-actions">
+          <button type="button" id="theme-toggle" class="btn-icon" aria-label="Cambiar tema de color" title="Alternar modo claro / oscuro">
+            <span class="theme-icon" aria-hidden="true">🌙</span>
+            <span class="theme-text sr-only">Modo oscuro</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- FORMULARIO DE ENTRADA -->
+      <section class="card form-section" aria-labelledby="form-heading">
+        <h2 id="form-heading" class="section-title">Parámetros del muestreo</h2>
+        <form id="form-muestra" novalidate>
+          <div class="form-grid">
+            <!-- Población (N) -->
+            <div class="form-group">
+              <label for="poblacion">
+                Población total (<span class="math-var">N</span>)
+                <span class="field-hint" title="Número total de elementos o individuos en la población bajo estudio">ℹ️</span>
+              </label>
+              <div class="input-wrapper">
+                <input 
+                  type="number" 
+                  id="poblacion" 
+                  name="poblacion" 
+                  min="1" 
+                  step="1" 
+                  placeholder="Ej. 2800" 
+                  value="2800" 
+                  required 
+                  aria-describedby="poblacion-error"
+                >
+              </div>
+              <span id="poblacion-error" class="error-message" role="alert"></span>
+            </div>
+
+            <!-- Margen de error (e) -->
+            <div class="form-group">
+              <label for="error">
+                Margen de error (<span class="math-var">e</span>)
+                <span class="field-hint" title="Diferencia máxima permitida entre la proporción muestral y la real">ℹ️</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="error" name="error" required>
+                  <option value="0.01">± 1% (0.01) — Muy exigente</option>
+                  <option value="0.02">± 2% (0.02)</option>
+                  <option value="0.03">± 3% (0.03) — Frecuente en sondeos</option>
+                  <option value="0.04">± 4% (0.04)</option>
+                  <option value="0.05" selected>± 5% (0.05) — Estándar académico</option>
+                  <option value="0.06">± 6% (0.06)</option>
+                  <option value="0.07">± 7% (0.07)</option>
+                  <option value="0.08">± 8% (0.08)</option>
+                  <option value="0.09">± 9% (0.09)</option>
+                  <option value="0.10">± 10% (0.10) — Mínimo aceptable</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Nivel de confianza (Z) -->
+            <div class="form-group">
+              <label for="confianza">
+                Nivel de confianza (<span class="math-var">1 - α</span>)
+                <span class="field-hint" title="Probabilidad de que el intervalo contenga el parámetro poblacional verdadero">ℹ️</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="confianza" name="confianza" required>
+                  <option value="1.645">90% de confianza (Z = 1.645)</option>
+                  <option value="1.96" selected>95% de confianza (Z = 1.960)</option>
+                  <option value="2.576">99% de confianza (Z = 2.576)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Proporción esperada (p) -->
+            <div class="form-group">
+              <label for="proporcion">
+                Proporción esperada (<span class="math-var">p</span> en %)
+                <span class="field-hint" title="50% maximiza la varianza p(1-p)=0.25 (escenario más conservador cuando se desconoce la proporción previa)">ℹ️</span>
+              </label>
+              <div class="input-wrapper input-with-suffix">
+                <input 
+                  type="number" 
+                  id="proporcion" 
+                  name="proporcion" 
+                  min="1" 
+                  max="99" 
+                  step="1" 
+                  value="50" 
+                  required 
+                  aria-describedby="proporcion-error"
+                >
+                <span class="input-suffix">%</span>
+              </div>
+              <span id="proporcion-error" class="error-message" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="btn-calcular" class="btn btn-primary">
+              <span class="btn-icon-text">📊</span> Calcular tamaño de muestra
+            </button>
+            <button type="button" id="btn-reset" class="btn btn-secondary">
+              Restablecer valores
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- RESULTADO PRINCIPAL -->
+      <section id="resultado-card" class="card result-card" aria-live="polite">
+        <div class="result-header">
+          <span class="result-eyebrow">Tamaño de muestra requerido</span>
+          <div class="result-actions">
+            <button type="button" id="btn-copiar" class="btn btn-outline-sm" title="Copiar resumen del cálculo al portapapeles">
+              📋 Copiar resumen
+            </button>
+          </div>
+        </div>
+
+        <div class="result-metric">
+          <span id="resultado-numero" class="metric-number">338</span>
+          <span class="metric-unit">individuos / observaciones</span>
+        </div>
+
+        <p id="resultado-detalle" class="result-description">
+          Para una población finita de <strong>2,800</strong> elementos, con un margen de error de <strong>±5%</strong>, un nivel de confianza del <strong>95%</strong> y una proporción esperada del <strong>50%</strong>.
+        </p>
+
+        <div class="result-meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Fracción de muestreo (n/N):</span>
+            <span id="meta-fraccion" class="meta-value">12.07%</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Valor exacto sin redondear:</span>
+            <span id="meta-exacto" class="meta-value">337.9175</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Criterio de redondeo:</span>
+            <span class="meta-value">Hacia arriba (⌈n⌉)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- DESGLOSE MATEMÁTICO PASO A PASO -->
+      <section class="card accordion-section">
+        <details id="desglose-details" open>
+          <summary class="accordion-summary">
+            <div class="summary-title-wrapper">
+              <span class="summary-icon">📐</span>
+              <h3>¿Cómo se calculó? (Desglose matemático paso a paso)</h3>
+            </div>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </summary>
+          <div class="accordion-content">
+            <p class="formula-intro">
+              Se aplica la fórmula de tamaño muestral para estimación de proporciones en <strong>población finita</strong>:
+            </p>
+            
+            <div class="formula-box">
+              <code>
+                n = [ N · Z² · p · (1 - p) ] / [ e² · (N - 1) + Z² · p · (1 - p) ]
+              </code>
+            </div>
+
+            <div class="math-steps" id="math-steps-container">
+              <!-- Generado dinámicamente en script.js -->
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- TABLA COMPARATIVA DE SENSIBILIDAD -->
+      <section class="card sensitivity-section">
+        <div class="sensitivity-header">
+          <div>
+            <h3 class="section-subtitle">Tabla de sensibilidad según margen de error</h3>
+            <p class="section-subtext">
+              Tamaño de muestra requerido para la población actual (<span id="tabla-poblacion-label" class="math-var">N = 2,800</span>) combinando diferentes niveles de confianza y márgenes de error (<span class="math-var">p = 50%</span>).
+            </p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="sensitivity-table" id="tabla-sensibilidad">
+            <thead>
+              <tr>
+                <th scope="col">Margen de error (e)</th>
+                <th scope="col">Confianza 90% (Z = 1.645)</th>
+                <th scope="col">Confianza 95% (Z = 1.96)</th>
+                <th scope="col">Confianza 99% (Z = 2.576)</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-sensibilidad-body">
+              <!-- Se rellena dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECCIÓN EXPLICATIVA DE FUNDAMENTOS -->
+      <section class="card theory-section">
+        <details id="teoria-details">
+          <summary class="accordion-summary">
+            <div class="summary-title-wrapper">
+              <span class="summary-icon">📖</span>
+              <h3>¿Cómo funciona esta calculadora? (Fundamentos estadísticos)</h3>
+            </div>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </summary>
+          <div class="accordion-content theory-content">
+            <article class="theory-item">
+              <h4>1. Tamaño de la población (N) y corrección por finitud</h4>
+              <p>
+                Cuando la población es finita y conocida, la selección de un individuo reduce el conjunto restante, reduciendo ligeramente la varianza del estimador. El término <code>(N - 1)</code> en el denominador incorpora el factor de corrección para poblaciones finitas (FPCF), evitando muestreos innecesariamente grandes.
+              </p>
+            </article>
+
+            <article class="theory-item">
+              <h4>2. Nivel de confianza y coeficiente Z</h4>
+              <p>
+                Representa el porcentaje de intervalos de confianza calculados a partir de muchas muestras independientes que contendrían el verdadero parámetro poblacional. Los valores críticos de la distribución normal estándar más habituales son:
+              </p>
+              <ul>
+                <li><strong>90% de confianza:</strong> Z = 1.645 (α = 0.10)</li>
+                <li><strong>95% de confianza:</strong> Z = 1.960 (α = 0.05, estándar científico más adoptado)</li>
+                <li><strong>99% de confianza:</strong> Z = 2.576 (α = 0.01, alta precisión)</li>
+              </ul>
+            </article>
+
+            <article class="theory-item">
+              <h4>3. Margen de error (e)</h4>
+              <p>
+                Es la tolerancia máxima de error que se está dispuesto a aceptar entre la proporción observada en la muestra y la proporción real de la población total. Un margen del <strong>±5% (0.05)</strong> significa que si la muestra arroja 60%, se estima que el valor real poblacional se encuentra entre 55% y 65%.
+              </p>
+            </article>
+
+            <article class="theory-item">
+              <h4>4. Proporción esperada (p = 50% como caso más conservador)</h4>
+              <p>
+                El producto <code>p · (1 - p)</code> representa la varianza de una distribución de Bernoulli. Este producto alcanza su valor máximo en <code>0.50 · 0.50 = 0.25</code>. Cuando no se cuenta con información de estudios previos, se asume <strong>p = 50%</strong> para garantizar el tamaño de muestra más seguro y suficiente posible.
+              </p>
+            </article>
+
+            <article class="theory-item">
+              <h4>5. Redondeo estricto hacia arriba (Techo: ⌈n⌉)</h4>
+              <p>
+                Dado que los elementos de una muestra son discretos (personas, encuestas, piezas inspeccionadas), cualquier fracción decimal exige redondear hacia el siguiente entero superior. Redondear hacia abajo dejaría el tamaño muestral por debajo del límite requerido para garantizar el nivel de confianza y margen de error especificados.
+              </p>
+            </article>
+          </div>
+        </details>
+      </section>
+
+      <!-- HISTORIAL RECIENTE -->
+      <section class="card history-section" id="historial-section">
+        <div class="history-header">
+          <h3 class="section-subtitle">Historial de cálculos recientes</h3>
+          <button type="button" id="btn-limpiar-historial" class="btn-text-sm">Limpiar historial</button>
+        </div>
+        <div id="historial-lista" class="history-list">
+          <!-- Generado dinámicamente con las últimas consultas -->
+        </div>
+      </section>
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p><strong>Calculadora de Tamaño de Muestra</strong> · Diseñada para docencia, investigación y proyectos estadísticos.</p>
+        <p class="footer-subtext">Basado en muestreo probabilístico simple para variables cualitativas dicotómicas en poblaciones finitas.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Notificación flotante para copiado (Toast accesible) -->
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-hidden="true">
+    Resumen copiado al portapapeles
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
