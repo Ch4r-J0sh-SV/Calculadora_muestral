@@ -3,72 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Herramienta para calcular el tamaño de muestra requerido en poblaciones finitas con desglose matemático y tabla comparativa.">
-  <title>Calculadora de Tamaño de Muestra</title>
+  <meta name="description" content="Herramienta avanzada para calcular el tamaño de muestra requerido en poblaciones finitas con diseño nativo estilo macOS e iOS.">
+  <title>Calculadora de Tamaño de Muestra — macOS Edition</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <!-- Encabezado -->
-    <header class="header">
-      <div class="header-top">
-        <h1>Calculadora de tamaño de muestra</h1>
-        <button type="button" id="theme-toggle" class="btn-theme" aria-label="Alternar modo oscuro">Modo oscuro</button>
+  <!-- Fondo de escritorio estilo Apple -->
+  <div class="apple-desktop-bg" aria-hidden="true">
+    <div class="glow-orb glow-1"></div>
+    <div class="glow-orb glow-2"></div>
+  </div>
+
+  <!-- Contenedor principal tipo Ventana macOS -->
+  <div class="macos-window">
+    <!-- Barra de título macOS -->
+    <header class="window-titlebar">
+      <!-- Botones de ventana (Traffic Lights) -->
+      <div class="traffic-lights" aria-hidden="true">
+        <span class="traffic-dot dot-close" title="Cerrar"></span>
+        <span class="traffic-dot dot-minimize" title="Minimizar"></span>
+        <span class="traffic-dot dot-zoom" title="Pantalla completa"></span>
       </div>
-      <p class="subtitle">Calcula el tamaño de muestra necesario para tu población.</p>
+
+      <!-- Título central -->
+      <div class="window-title">
+        <svg class="sf-icon app-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 3v18h18" />
+          <path d="M18 9l-5 5-4-4-3 3" />
+        </svg>
+        <span class="title-text">Calculadora de Muestra</span>
+        <span class="version-badge">v0.3</span>
+      </div>
+
+      <!-- Interruptor de Modo Oscuro estilo iOS -->
+      <div class="theme-switch-container">
+        <button type="button" id="theme-toggle" class="ios-switch" role="switch" aria-checked="false" aria-label="Alternar modo oscuro">
+          <span class="switch-icons" aria-hidden="true">
+            <svg class="switch-icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </svg>
+            <svg class="switch-icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </span>
+          <span class="switch-thumb"></span>
+        </button>
+      </div>
     </header>
 
-    <main class="main">
-      <!-- Formulario de entrada -->
-      <section class="panel form-panel">
+    <!-- Sub-encabezado descriptivo -->
+    <div class="window-toolbar">
+      <p class="toolbar-caption">Estimación estadística de tamaño muestral para poblaciones finitas con desglose metodológico.</p>
+    </div>
+
+    <!-- Contenido de la ventana -->
+    <main class="window-content">
+      
+      <!-- Panel de Entrada de Parámetros -->
+      <section class="apple-card form-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <svg class="sf-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="4" y="2" width="16" height="20" rx="2" />
+              <line x1="8" y1="6" x2="16" y2="6" />
+              <line x1="16" y1="14" x2="16" y2="14" />
+              <line x1="16" y1="18" x2="16" y2="18" />
+              <line x1="12" y1="14" x2="12" y2="14" />
+              <line x1="12" y1="18" x2="12" y2="18" />
+              <line x1="8" y1="14" x2="8" y2="14" />
+              <line x1="8" y1="18" x2="8" y2="18" />
+              <line x1="8" y1="10" x2="16" y2="10" />
+            </svg>
+            <h2>Parámetros del Estudio</h2>
+          </div>
+          <span class="card-sublabel">Ajuste de variables</span>
+        </div>
+
         <form id="form-muestra" novalidate>
           <div class="form-grid">
+            
             <!-- Población (N) -->
             <div class="form-group">
-              <label for="poblacion">Población (N)</label>
-              <input 
-                type="number" 
-                id="poblacion" 
-                name="poblacion" 
-                min="1" 
-                step="1" 
-                value="2800" 
-                required 
-                aria-describedby="poblacion-error"
-              >
+              <label for="poblacion" class="field-label">
+                Población <span class="param-symbol">(N)</span>
+              </label>
+              <div class="input-wrapper">
+                <input 
+                  type="number" 
+                  id="poblacion" 
+                  name="poblacion" 
+                  min="1" 
+                  step="1" 
+                  value="2800" 
+                  required 
+                  aria-describedby="poblacion-error"
+                  class="apple-input"
+                  placeholder="Ej. 2800"
+                >
+              </div>
               <span id="poblacion-error" class="error-message" role="alert"></span>
             </div>
 
             <!-- Margen de error (e) -->
             <div class="form-group">
-              <label for="error">Margen de error (e)</label>
-              <select id="error" name="error" required>
-                <option value="0.01">1% (±0.01)</option>
-                <option value="0.02">2% (±0.02)</option>
-                <option value="0.03">3% (±0.03)</option>
-                <option value="0.04">4% (±0.04)</option>
-                <option value="0.05" selected>5% (±0.05)</option>
-                <option value="0.06">6% (±0.06)</option>
-                <option value="0.07">7% (±0.07)</option>
-                <option value="0.08">8% (±0.08)</option>
-                <option value="0.09">9% (±0.09)</option>
-                <option value="0.10">10% (±0.10)</option>
-              </select>
+              <label for="error" class="field-label">
+                Margen de error <span class="param-symbol">(e)</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="error" name="error" required class="apple-select">
+                  <option value="0.01">1% (±0.01)</option>
+                  <option value="0.02">2% (±0.02)</option>
+                  <option value="0.03">3% (±0.03)</option>
+                  <option value="0.04">4% (±0.04)</option>
+                  <option value="0.05" selected>5% (±0.05)</option>
+                  <option value="0.06">6% (±0.06)</option>
+                  <option value="0.07">7% (±0.07)</option>
+                  <option value="0.08">8% (±0.08)</option>
+                  <option value="0.09">9% (±0.09)</option>
+                  <option value="0.10">10% (±0.10)</option>
+                </select>
+                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
             </div>
 
-            <!-- Nivel de confianza -->
-            <div class="form-group">
-              <label for="confianza">Nivel de confianza</label>
-              <select id="confianza" name="confianza" required>
-                <option value="1.645">90% (Z = 1.645)</option>
-                <option value="1.96" selected>95% (Z = 1.960)</option>
-                <option value="2.576">99% (Z = 2.576)</option>
-              </select>
+            <!-- Nivel de confianza con Segmented Control estilo Apple -->
+            <div class="form-group full-width-group">
+              <label for="confianza" class="field-label">
+                Nivel de confianza <span class="param-symbol">(Z)</span>
+              </label>
+              
+              <!-- Segmented Control visual estilo Apple -->
+              <div class="segmented-control" id="segmented-confianza" role="radiogroup" aria-label="Nivel de confianza">
+                <button type="button" class="segment-btn" data-value="1.645" role="radio" aria-checked="false">
+                  <span class="segment-pct">90%</span>
+                  <span class="segment-z">Z = 1.645</span>
+                </button>
+                <button type="button" class="segment-btn active" data-value="1.96" role="radio" aria-checked="true">
+                  <span class="segment-pct">95%</span>
+                  <span class="segment-z">Z = 1.960</span>
+                </button>
+                <button type="button" class="segment-btn" data-value="2.576" role="radio" aria-checked="false">
+                  <span class="segment-pct">99%</span>
+                  <span class="segment-z">Z = 2.576</span>
+                </button>
+              </div>
+
+              <!-- Select sincronizado para accesibilidad/fallback -->
+              <div class="select-wrapper sr-only">
+                <select id="confianza" name="confianza" required class="apple-select">
+                  <option value="1.645">90% (Z = 1.645)</option>
+                  <option value="1.96" selected>95% (Z = 1.960)</option>
+                  <option value="2.576">99% (Z = 2.576)</option>
+                </select>
+              </div>
             </div>
 
-            <!-- Proporción esperada -->
-            <div class="form-group">
-              <label for="proporcion">Proporción esperada (%)</label>
+            <!-- Proporción esperada (%) -->
+            <div class="form-group full-width-group">
+              <label for="proporcion" class="field-label">
+                Proporción esperada <span class="param-symbol">(p)</span>
+              </label>
               <div class="input-suffix-group">
                 <input 
                   type="number" 
@@ -80,89 +177,129 @@
                   value="50" 
                   required 
                   aria-describedby="proporcion-error"
+                  class="apple-input"
                 >
-                <span class="suffix">%</span>
+                <span class="suffix-pill">%</span>
               </div>
               <span id="proporcion-error" class="error-message" role="alert"></span>
             </div>
           </div>
 
+          <!-- Acciones del formulario -->
           <div class="form-actions">
-            <button type="submit" id="btn-calcular" class="btn btn-primary">Calcular muestra</button>
-            <button type="button" id="btn-reset" class="btn btn-secondary">Restablecer</button>
+            <button type="submit" id="btn-calcular" class="apple-btn btn-primary">
+              <svg class="sf-icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+              <span>Calcular muestra</span>
+            </button>
+            <button type="button" id="btn-reset" class="apple-btn btn-secondary" title="Restablecer valores originales">
+              <svg class="sf-icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              <span>Restablecer</span>
+            </button>
           </div>
         </form>
       </section>
 
-      <!-- Resultado principal -->
-      <section id="resultado" class="panel result-panel" aria-live="polite">
-        <div class="result-top">
-          <h2>Resultado</h2>
-          <button type="button" id="btn-copiar" class="btn-link" title="Copiar resumen del cálculo">Copiar resultado</button>
+      <!-- Panel de Resultado Principal -->
+      <section id="resultado" class="apple-card result-card" aria-live="polite">
+        <div class="result-header">
+          <div class="result-status-indicator">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-text">Resultado Recomendado</span>
+          </div>
+          <button type="button" id="btn-copiar" class="apple-btn btn-action-sm" title="Copiar resumen del cálculo">
+            <svg class="sf-icon btn-sm-icon" id="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span id="copy-btn-text">Copiar</span>
+          </button>
         </div>
 
-        <div class="result-value-box">
-          <span id="resultado-numero" class="result-number">338</span>
-          <span class="result-unit">personas</span>
+        <div class="result-display">
+          <div class="result-number-group">
+            <span id="resultado-numero" class="result-number">338</span>
+            <span class="result-unit">elementos muestrales</span>
+          </div>
+          <p id="resultado-detalle" class="result-summary">
+            Para una población de 2,800, con un margen de error de ±5%, un nivel de confianza del 95% y una proporción esperada del 50%.
+          </p>
         </div>
 
-        <p id="resultado-detalle" class="result-text">
-          Para una población de 2,800, con un margen de error de ±5%, un nivel de confianza del 95% y una proporción esperada del 50%.
-        </p>
-
+        <!-- Métricas estilo Inset Grouped de Apple -->
         <div class="result-metrics-grid">
-          <div class="metric-box">
-            <span class="metric-label">Fracción de muestreo (n/N):</span>
-            <span id="meta-fraccion" class="metric-val">12.07%</span>
+          <div class="metric-card">
+            <span class="metric-label">Fracción de muestreo (n/N)</span>
+            <span id="meta-fraccion" class="metric-value">12.07%</span>
           </div>
-          <div class="metric-box">
-            <span class="metric-label">Valor exacto sin redondear:</span>
-            <span id="meta-exacto" class="metric-val">337.9175</span>
+          <div class="metric-card">
+            <span class="metric-label">Valor exacto sin redondear</span>
+            <span id="meta-exacto" class="metric-value">337.9175</span>
           </div>
-          <div class="metric-box">
-            <span class="metric-label">Criterio de redondeo:</span>
-            <span class="metric-val">Hacia arriba (techo)</span>
+          <div class="metric-card">
+            <span class="metric-label">Criterio metodológico</span>
+            <span class="metric-value">Hacia arriba (techo)</span>
           </div>
         </div>
       </section>
 
-      <!-- Desglose matemático -->
-      <section class="panel details-panel">
-        <details id="desglose-details" open>
-          <summary class="panel-summary">
-            <h3>¿Cómo se calculó? (detalle expandible)</h3>
+      <!-- Desglose Matemático Paso a Paso -->
+      <section class="apple-card details-card">
+        <details id="desglose-details" open class="apple-disclosure">
+          <summary class="disclosure-header">
+            <div class="disclosure-title-group">
+              <svg class="sf-icon disclosure-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              <h3>Desglose matemático paso a paso</h3>
+            </div>
+            <span class="disclosure-badge">Álgebra</span>
           </summary>
-          <div class="panel-body">
-            <p class="formula-intro">
-              Fórmula para población finita:
-            </p>
-            <div class="formula-box">
+          
+          <div class="disclosure-content">
+            <p class="formula-label">Fórmula para población finita:</p>
+            <div class="apple-code-box">
               <code>n = [ N · Z² · p(1 - p) ] / [ e²(N - 1) + Z² · p(1 - p) ]</code>
             </div>
-            <div id="math-steps-container" class="steps-list">
-              <!-- Generado dinámicamente -->
+            <div id="math-steps-container" class="steps-grid">
+              <!-- Generado dinámicamente por script.js -->
             </div>
           </div>
         </details>
       </section>
 
-      <!-- Tabla comparativa de sensibilidad -->
-      <section class="panel table-panel">
-        <div class="panel-header">
-          <h3>Tabla de sensibilidad según margen de error</h3>
-          <p class="panel-desc">
-            Tamaños de muestra para <span id="tabla-poblacion-label" class="mono-text">N = 2,800</span> con proporción esperada del 50%.
-          </p>
+      <!-- Tabla Comparativa de Sensibilidad -->
+      <section class="apple-card table-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <svg class="sf-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="3" y1="15" x2="21" y2="15" />
+              <line x1="9" y1="3" x2="9" y2="21" />
+              <line x1="15" y1="3" x2="15" y2="21" />
+            </svg>
+            <h3>Matriz de Sensibilidad</h3>
+          </div>
+          <span class="card-sublabel" id="tabla-poblacion-label">N = 2,800</span>
         </div>
 
-        <div class="table-container">
-          <table class="data-table" id="tabla-sensibilidad">
+        <p class="table-description">
+          Comparativa de requerimientos muestrales según el margen de error y el coeficiente de confianza fijando p = 50%.
+        </p>
+
+        <div class="apple-table-wrapper">
+          <table class="apple-table" id="tabla-sensibilidad">
             <thead>
               <tr>
-                <th scope="col">Margen (e)</th>
-                <th scope="col">90% (Z = 1.645)</th>
-                <th scope="col">95% (Z = 1.96)</th>
-                <th scope="col">99% (Z = 2.576)</th>
+                <th scope="col" class="th-margin">Margen (e)</th>
+                <th scope="col">90% <span class="th-z">(1.645)</span></th>
+                <th scope="col">95% <span class="th-z">(1.960)</span></th>
+                <th scope="col">99% <span class="th-z">(2.576)</span></th>
               </tr>
             </thead>
             <tbody id="tabla-sensibilidad-body">
@@ -172,75 +309,113 @@
         </div>
       </section>
 
-      <!-- Sección explicativa -->
-      <section class="panel details-panel">
-        <details id="teoria-details">
-          <summary class="panel-summary">
-            <h3>¿Cómo funciona esta calculadora? (sección explicativa)</h3>
+      <!-- Fundamentación Teórica -->
+      <section class="apple-card details-card">
+        <details id="teoria-details" class="apple-disclosure">
+          <summary class="disclosure-header">
+            <div class="disclosure-title-group">
+              <svg class="sf-icon disclosure-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              <h3>Fundamentación estadística del cálculo</h3>
+            </div>
+            <span class="disclosure-badge">Conceptos</span>
           </summary>
-          <div class="panel-body theory-body">
-            <article class="theory-block">
-              <h4>1. Tamaño de la población (N)</h4>
-              <p>
-                Es el número total de individuos o elementos que conforman el universo de estudio. En poblaciones finitas, conocer N permite aplicar el factor de corrección (N - 1) en el denominador, lo cual reduce el tamaño de muestra requerido sin perder representatividad.
-              </p>
-            </article>
+          
+          <div class="disclosure-content theory-content">
+            <div class="theory-item">
+              <div class="theory-item-header">
+                <span class="theory-item-badge">1</span>
+                <h4>Población Finita (N)</h4>
+              </div>
+              <p>Representa el total de elementos del universo delimitado. Conocer N permite aplicar el factor de corrección finita (N - 1) en el denominador, optimizando el tamaño muestral sin sacrificar validez inferencial.</p>
+            </div>
 
-            <article class=theory-block>
-              <h4>2. Nivel de confianza y valor Z</h4>
-              <p>
-                Indica el grado de certeza de que los resultados obtenidos en la muestra representen fielmente a la población general. El valor Z proviene de la distribución normal estandarizada:
-              </p>
-              <ul>
-                <li>90% de confianza: Z = 1.645</li>
-                <li>95% de confianza: Z = 1.960 (estándar académico habitual)</li>
-                <li>99% de confianza: Z = 2.576</li>
-              </ul>
-            </article>
+            <div class="theory-item">
+              <div class="theory-item-header">
+                <span class="theory-item-badge">2</span>
+                <h4>Nivel de Confianza (Z)</h4>
+              </div>
+              <p>Probabilidad de que el intervalo construido contenga el verdadero parámetro poblacional. Los valores críticos habituales son: 90% (Z = 1.645), 95% (Z = 1.960) y 99% (Z = 2.576).</p>
+            </div>
 
-            <article class="theory-block">
-              <h4>3. Margen de error (e)</h4>
-              <p>
-                Representa la diferencia máxima admisible entre la estimación muestral y el parámetro real de la población. Un error de ±5% significa que la proporción estimada se situará dentro de un intervalo de 5 puntos porcentuales por encima o por debajo del valor real.
-              </p>
-            </article>
+            <div class="theory-item">
+              <div class="theory-item-header">
+                <span class="theory-item-badge">3</span>
+                <h4>Margen de Error (e)</h4>
+              </div>
+              <p>Amplitud de tolerancia máxima aceptada entre el estimador muestral y el parámetro. Un margen de ±5% asegura que la estimación distará a lo sumo 5 puntos porcentuales del valor real.</p>
+            </div>
 
-            <article class="theory-block">
-              <h4>4. Proporción esperada (p = 50%)</h4>
-              <p>
-                El término p(1 - p) representa la varianza de una variable dicotómica. Este producto alcanza su valor máximo en p = 0.50 (0.25). Por ello, cuando se desconoce la proporción en estudios previos, se asume 50% por principio conservador, garantizando la muestra más robusta.
-              </p>
-            </article>
+            <div class="theory-item">
+              <div class="theory-item-header">
+                <span class="theory-item-badge">4</span>
+                <h4>Proporción Esperada (p = 50%)</h4>
+              </div>
+              <p>La dispersión p(1 - p) alcanza su máximo absoluto en p = 0.50 (varianza máxima de 0.25). Adoptar 50% garantiza la muestra más conservadora y segura cuando no hay antecedentes empíricos.</p>
+            </div>
 
-            <article class="theory-block">
-              <h4>5. Redondeo hacia arriba</h4>
-              <p>
-                Cualquier resultado fraccionario se redondea al entero superior inmediato. Como no es posible encuestar a una fracción de persona, redondear hacia abajo dejaría el tamaño muestral por debajo del umbral mínimo de confiabilidad requerido.
-              </p>
-            </article>
+            <div class="theory-item">
+              <div class="theory-item-header">
+                <span class="theory-item-badge">5</span>
+                <h4>Redondeo hacia arriba (Techo)</h4>
+              </div>
+              <p>Cualquier fracción decimal se aproxima al entero superior. Redondear por defecto reduciría el nivel de confianza o ampliaría el error especificado.</p>
+            </div>
           </div>
         </details>
       </section>
 
-      <!-- Historial -->
-      <section class="panel history-panel" id="historial-section">
-        <div class="history-header">
-          <h3>Historial de cálculos</h3>
-          <button type="button" id="btn-limpiar-historial" class="btn-link-sm">Limpiar historial</button>
+      <!-- Historial de Cálculos -->
+      <section class="apple-card history-card" id="historial-section">
+        <div class="card-header">
+          <div class="card-title-group">
+            <svg class="sf-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <h3>Historial Reciente</h3>
+          </div>
+          <button type="button" id="btn-limpiar-historial" class="apple-btn btn-ghost-sm" title="Borrar historial guardado">
+            <svg class="sf-icon btn-sm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Borrar</span>
+          </button>
         </div>
-        <div id="historial-lista" class="history-list">
-          <!-- Generado dinámicamente -->
+
+        <div id="historial-lista" class="apple-history-list">
+          <!-- Generado dinámicamente por script.js -->
         </div>
       </section>
+
     </main>
 
-    <!-- Pie de página -->
-    <footer class="footer">
-      <p>Calculadora de Tamaño de Muestra — Estadística Inferencial</p>
+    <!-- Barra de estado / Pie de ventana -->
+    <footer class="window-statusbar">
+      <div class="statusbar-item">
+        <span class="status-indicator-mini"></span>
+        <span>Modo: Población Finita</span>
+      </div>
+      <div class="statusbar-item">
+        <span>Fórmula de Proporciones</span>
+      </div>
+      <div class="statusbar-item">
+        <span>Estadística Inferencial</span>
+      </div>
     </footer>
   </div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite" aria-hidden="true"></div>
+  <!-- Toast estilo Dynamic Island / HUD macOS -->
+  <div id="toast" class="apple-toast" role="status" aria-live="polite" aria-hidden="true">
+    <div class="toast-inner">
+      <svg class="sf-icon toast-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <span id="toast-message">Resumen copiado al portapapeles</span>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

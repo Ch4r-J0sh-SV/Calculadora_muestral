@@ -1,174 +1,496 @@
 /* ==========================================================================
-   Calculadora de Tamaño de Muestra
-   Diseño académico, sobrio y funcional (sin degradados ni estética de IA)
+   Calculadora de Tamaño de Muestra — Apple Human Interface System (macOS & iOS)
+   Versión V0.3 — Paleta oficial oficial de Apple HIG, sin emojis y acabado nativo
    ========================================================================== */
 
+/* Variables de Diseño Oficiales de Apple (Light Mode por defecto) */
 :root {
-  /* Modo Claro */
-  --bg-page: #f9fafb;
-  --bg-panel: #ffffff;
-  --bg-subtle: #f3f4f6;
-  --border-color: #d1d5db;
-  --border-subtle: #e5e7eb;
+  /* Colores de Sistema de Apple (iOS & macOS Light) */
+  --system-blue: #007aff;
+  --system-blue-hover: #006ee6;
+  --system-blue-active: #0062cc;
+  --system-blue-tint: rgba(0, 122, 255, 0.10);
+  --system-blue-glow: rgba(0, 122, 255, 0.28);
 
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-muted: #6b7280;
+  --system-green: #34c759;
+  --system-red: #ff3b30;
+  --system-red-tint: rgba(255, 59, 48, 0.10);
+  --system-orange: #ff9500;
+  --system-yellow: #ffcc00;
+  --system-gray: #8e8e93;
 
-  --accent-color: #1e3a8a;       /* Azul marino sobrio */
-  --accent-hover: #172554;
-  --accent-active-bg: #e0e7ff;
+  /* Fondos del Sistema (Apple System Backgrounds) */
+  --system-background: #ffffff;
+  --system-secondary-bg: #f2f2f7;
+  --system-tertiary-bg: #ffffff;
+  --system-grouped-bg: #f2f2f7;
+  --system-secondary-grouped-bg: #ffffff;
 
-  --color-error: #b91c1c;
-  --bg-error: #fef2f2;
+  /* Fondo de Escritorio macOS (Desktop Canvas) */
+  --macos-desktop-canvas: radial-gradient(circle at 50% 15%, #eef3f9 0%, #dfe7f2 60%, #d2dee9 100%);
+  --macos-window-bg: rgba(255, 255, 255, 0.84);
+  --macos-window-border: rgba(0, 0, 0, 0.12);
+  --macos-card-bg: rgba(255, 255, 255, 0.72);
+  --macos-card-border: rgba(0, 0, 0, 0.07);
+  --macos-card-inset: rgba(0, 0, 0, 0.03);
 
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  /* Elementos de Relleno (Apple System Fills) */
+  --system-fill: rgba(120, 120, 128, 0.20);
+  --system-secondary-fill: rgba(120, 120, 128, 0.16);
+  --system-tertiary-fill: rgba(118, 118, 128, 0.12);
+  --system-quaternary-fill: rgba(116, 116, 128, 0.08);
+
+  /* Jerarquía Tipográfica de Apple (Labels) */
+  --label-primary: #000000;
+  --label-secondary: rgba(60, 60, 67, 0.60);
+  --label-tertiary: rgba(60, 60, 67, 0.35);
+  --label-quaternary: rgba(60, 60, 67, 0.18);
+
+  /* Separadores Oficiales */
+  --separator: rgba(60, 60, 67, 0.15);
+  --separator-opaque: #c6c6c8;
+  --hairline: rgba(0, 0, 0, 0.05);
+
+  /* Segmented Control Oficial */
+  --segmented-bg: rgba(118, 118, 128, 0.12);
+  --segmented-thumb: #ffffff;
+  --segmented-thumb-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 1px 1px rgba(0, 0, 0, 0.04);
+
+  /* Sombras de Ventana macOS */
+  --window-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.18), 0 8px 24px -4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.07);
+  --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.03), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --floating-shadow: 0 16px 40px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  /* Tipografía San Francisco */
+  --font-apple-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-apple-mono: ui-monospace, "SF Mono", "SF Pro Rounded", Menlo, Monaco, Consolas, monospace;
 }
 
+/* Modo Oscuro (Apple macOS Dark Mode & iOS Deep Black) */
 [data-theme="dark"] {
-  /* Modo Oscuro */
-  --bg-page: #0f172a;
-  --bg-panel: #1e293b;
-  --bg-subtle: #334155;
-  --border-color: #475569;
-  --border-subtle: #334155;
+  /* Colores de Sistema de Apple (iOS & macOS Dark) */
+  --system-blue: #0a84ff;
+  --system-blue-hover: #218fff;
+  --system-blue-active: #0071e3;
+  --system-blue-tint: rgba(10, 132, 255, 0.16);
+  --system-blue-glow: rgba(10, 132, 255, 0.35);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+  --system-green: #30d158;
+  --system-red: #ff453a;
+  --system-red-tint: rgba(255, 69, 58, 0.18);
+  --system-orange: #ff9f0a;
+  --system-yellow: #ffd60a;
+  --system-gray: #8e8e93;
 
-  --accent-color: #3b82f6;
-  --accent-hover: #60a5fa;
-  --accent-active-bg: #1e3a8a;
+  /* Fondos del Sistema */
+  --system-background: #000000;
+  --system-secondary-bg: #1c1c1e;
+  --system-tertiary-bg: #2c2c2e;
+  --system-grouped-bg: #000000;
+  --system-secondary-grouped-bg: #1c1c1e;
 
-  --color-error: #f87171;
-  --bg-error: #450a0a;
+  /* Fondo de Escritorio macOS Dark Canvas */
+  --macos-desktop-canvas: radial-gradient(circle at 50% 15%, #151a22 0%, #0d1015 60%, #050608 100%);
+  --macos-window-bg: rgba(30, 30, 32, 0.85);
+  --macos-window-border: rgba(255, 255, 255, 0.15);
+  --macos-card-bg: rgba(44, 44, 46, 0.65);
+  --macos-card-border: rgba(255, 255, 255, 0.09);
+  --macos-card-inset: rgba(255, 255, 255, 0.04);
+
+  /* Elementos de Relleno Dark */
+  --system-fill: rgba(120, 120, 128, 0.36);
+  --system-secondary-fill: rgba(120, 120, 128, 0.32);
+  --system-tertiary-fill: rgba(118, 118, 128, 0.24);
+  --system-quaternary-fill: rgba(118, 118, 128, 0.16);
+
+  /* Jerarquía Tipográfica Dark */
+  --label-primary: #ffffff;
+  --label-secondary: rgba(235, 235, 245, 0.60);
+  --label-tertiary: rgba(235, 235, 245, 0.35);
+  --label-quaternary: rgba(235, 235, 245, 0.16);
+
+  /* Separadores Dark */
+  --separator: rgba(84, 84, 88, 0.45);
+  --separator-opaque: #38383a;
+  --hairline: rgba(255, 255, 255, 0.08);
+
+  /* Segmented Control Dark */
+  --segmented-bg: rgba(118, 118, 128, 0.24);
+  --segmented-thumb: rgba(99, 99, 102, 0.65);
+  --segmented-thumb-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.12);
+
+  /* Sombras Dark */
+  --window-shadow: 0 32px 80px -12px rgba(0, 0, 0, 0.85), 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --floating-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 6px 16px rgba(0, 0, 0, 0.5);
 }
 
-/* Reset básico */
+/* ==========================================================================
+   Reset y Base
+   ========================================================================== */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-body {
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--text-primary);
-  background-color: var(--bg-page);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+html {
+  font-size: 15px;
+  -webkit-text-size-adjust: 100%;
 }
 
-/* Contenedor centrado tipo herramienta académica (~580px) */
-.container {
-  max-width: 580px;
-  margin: 0 auto;
-  padding: 24px 16px 40px;
+body {
+  font-family: var(--font-apple-sans);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--label-primary);
+  background: var(--macos-desktop-canvas);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.3s ease;
+}
+
+/* Fondo de escritorio estilo Apple Wallpaper */
+.apple-desktop-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* ==========================================================================
+   Ventana macOS (Contenedor Maestro)
+   ========================================================================== */
+.macos-window {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 680px;
+  background-color: var(--macos-window-bg);
+  backdrop-filter: blur(40px) saturate(190%);
+  -webkit-backdrop-filter: blur(40px) saturate(190%);
+  border: 1px solid var(--macos-window-border);
+  border-radius: 20px;
+  box-shadow: var(--window-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Barra de Título macOS */
+.window-titlebar {
+  height: 52px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--separator);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(0, 0, 0, 0.02) 100%);
+  user-select: none;
+}
+
+[data-theme="dark"] .window-titlebar {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.15) 100%);
+}
+
+/* Botones de ventana (Traffic Lights auténticos de macOS) */
+.traffic-lights {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.traffic-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+.dot-close {
+  background-color: #ff5f56;
+}
+
+.dot-minimize {
+  background-color: #ffbd2e;
+}
+
+.dot-zoom {
+  background-color: #27c93f;
+}
+
+.traffic-lights:hover .traffic-dot {
+  filter: brightness(0.92);
+}
+
+/* Título Central de Ventana */
+.window-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--label-primary);
+  letter-spacing: -0.015em;
+}
+
+.app-logo-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--system-blue);
+}
+
+.version-badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background-color: var(--system-quaternary-fill);
+  color: var(--label-secondary);
+  border: 1px solid var(--hairline);
+}
+
+/* Switch iOS para Modo Oscuro */
+.theme-switch-container {
+  display: flex;
+  align-items: center;
+}
+
+.ios-switch {
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  background-color: var(--system-secondary-fill);
+  border: 1px solid var(--macos-card-border);
+  cursor: pointer;
+  position: relative;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.28s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.28s ease;
+  outline: none;
+}
+
+.ios-switch:focus-visible {
+  box-shadow: 0 0 0 3px var(--system-blue-glow);
+}
+
+.switch-icons {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.switch-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--label-tertiary);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.switch-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.1);
+  transform: translateX(0);
+  transition: transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1), background-color 0.2s ease;
+  z-index: 2;
+}
+
+[data-theme="dark"] .ios-switch {
+  background-color: var(--system-blue);
+  border-color: var(--system-blue);
+}
+
+[data-theme="dark"] .ios-switch .switch-thumb {
+  transform: translateX(20px);
+}
+
+[data-theme="dark"] .switch-icon.icon-moon {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .switch-icon.icon-sun {
+  opacity: 0.3;
+}
+
+/* Sub-encabezado descriptivo (Toolbar) */
+.window-toolbar {
+  padding: 10px 22px;
+  background-color: var(--macos-card-inset);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.toolbar-caption {
+  font-size: 0.82rem;
+  color: var(--label-secondary);
+  line-height: 1.4;
+}
+
+/* Contenedor Principal de la Ventana */
+.window-content {
+  padding: 20px 22px 28px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* Encabezado */
-.header {
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 14px;
+/* ==========================================================================
+   Tarjetas Estilo Apple Inset Grouped
+   ========================================================================== */
+.apple-card {
+  background-color: var(--macos-card-bg);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: var(--card-shadow);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.header-top {
+.card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-.header h1 {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.25;
+.card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.subtitle {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-top: 4px;
+.card-title-group h2, .card-title-group h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--label-primary);
+  letter-spacing: -0.01em;
 }
 
-.btn-theme {
-  background: none;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  font-family: inherit;
+.card-icon {
+  width: 17px;
+  height: 17px;
+  color: var(--system-blue);
+}
+
+.card-sublabel {
   font-size: 0.78rem;
-  padding: 4px 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  white-space: nowrap;
+  font-weight: 500;
+  color: var(--label-tertiary);
+  background-color: var(--macos-card-inset);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--hairline);
 }
 
-.btn-theme:hover {
-  background-color: var(--bg-subtle);
-  color: var(--text-primary);
-}
-
-/* Paneles */
-.panel {
-  background-color: var(--bg-panel);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 16px 18px;
-}
-
-/* Formulario */
+/* ==========================================================================
+   Formulario y Controles Nativos
+   ========================================================================== */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 14px 16px;
 }
 
-@media (max-width: 520px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
+.full-width-group {
+  grid-column: 1 / -1;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--label-secondary);
+  display: flex;
+  align-items: center;
   gap: 4px;
 }
 
-.form-group label {
-  font-size: 0.85rem;
+.param-symbol {
+  font-family: var(--font-apple-mono);
+  font-size: 0.8rem;
+  color: var(--system-blue);
   font-weight: 600;
-  color: var(--text-primary);
 }
 
-input[type="number"], select {
+.apple-input, .apple-select {
   width: 100%;
-  padding: 8px 10px;
   font-family: inherit;
   font-size: 0.92rem;
-  color: var(--text-primary);
-  background-color: var(--bg-panel);
-  border: 1px solid var(--border-color);
-  border-radius: 3px;
-}
-
-input[type="number"]:focus, select:focus {
+  color: var(--label-primary);
+  background-color: var(--system-quaternary-fill);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   outline: none;
-  border-color: var(--accent-color);
 }
 
-input.input-invalid {
-  border-color: var(--color-error);
-  background-color: var(--bg-error);
+.apple-input:hover, .apple-select:hover {
+  background-color: var(--system-tertiary-fill);
+}
+
+.apple-input:focus, .apple-select:focus {
+  border-color: var(--system-blue);
+  background-color: var(--system-background);
+  box-shadow: 0 0 0 3.5px var(--system-blue-glow);
+}
+
+.apple-input.input-invalid {
+  border-color: var(--system-red);
+  background-color: var(--system-red-tint);
+}
+
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.select-wrapper .apple-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+.select-chevron {
+  position: absolute;
+  right: 12px;
+  width: 14px;
+  height: 14px;
+  color: var(--label-tertiary);
+  pointer-events: none;
 }
 
 .input-suffix-group {
@@ -177,446 +499,714 @@ input.input-invalid {
   align-items: center;
 }
 
-.input-suffix-group input {
-  padding-right: 28px;
+.input-suffix-group .apple-input {
+  padding-right: 42px;
 }
 
-.input-suffix-group .suffix {
+.suffix-pill {
   position: absolute;
   right: 10px;
-  color: var(--text-muted);
-  font-size: 0.85rem;
+  font-family: var(--font-apple-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--label-tertiary);
+  background: var(--macos-card-inset);
+  padding: 2px 6px;
+  border-radius: 6px;
   pointer-events: none;
 }
 
 .error-message {
-  font-size: 0.76rem;
-  color: var(--color-error);
+  font-size: 0.75rem;
+  color: var(--system-red);
   min-height: 14px;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* ==========================================================================
+   Segmented Control Estilo Apple
+   ========================================================================== */
+.segmented-control {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background-color: var(--segmented-bg);
+  padding: 3px;
+  border-radius: 11px;
+  gap: 2px;
+  user-select: none;
+}
+
+.segment-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 4px;
+  border: none;
+  background: transparent;
+  color: var(--label-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  outline: none;
+}
+
+.segment-pct {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.segment-z {
+  font-family: var(--font-apple-mono);
+  font-size: 0.7rem;
+  color: var(--label-tertiary);
+  margin-top: 2px;
+}
+
+.segment-btn:hover:not(.active) {
+  color: var(--label-primary);
+}
+
+.segment-btn.active {
+  background-color: var(--segmented-thumb);
+  color: var(--label-primary);
+  box-shadow: var(--segmented-thumb-shadow);
+}
+
+.segment-btn.active .segment-z {
+  color: var(--system-blue);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Botones Estilo Apple
+   ========================================================================== */
 .form-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-top: 14px;
 }
 
-.btn {
+.apple-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-family: inherit;
   font-size: 0.88rem;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 3px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 10px;
   cursor: pointer;
   border: 1px solid transparent;
+  transition: all 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+  outline: none;
+}
+
+.apple-btn:active {
+  transform: scale(0.98);
+}
+
+.apple-btn:focus-visible {
+  box-shadow: 0 0 0 3.5px var(--system-blue-glow);
 }
 
 .btn-primary {
-  background-color: var(--accent-color);
+  background-color: var(--system-blue);
   color: #ffffff;
-  border-color: var(--accent-color);
+  border-color: transparent;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.25);
 }
 
 .btn-primary:hover {
-  background-color: var(--accent-hover);
+  background-color: var(--system-blue-hover);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.35);
+}
+
+.btn-primary:active {
+  background-color: var(--system-blue-active);
 }
 
 .btn-secondary {
-  background-color: var(--bg-subtle);
-  color: var(--text-secondary);
-  border-color: var(--border-color);
+  background-color: var(--system-secondary-fill);
+  color: var(--label-primary);
+  border-color: transparent;
 }
 
 .btn-secondary:hover {
-  color: var(--text-primary);
+  background-color: var(--system-fill);
 }
 
-/* Panel de Resultado */
-.result-panel {
-  border-left: 4px solid var(--accent-color);
+.btn-action-sm {
+  font-size: 0.78rem;
+  padding: 5px 12px;
+  border-radius: 7px;
+  background-color: var(--system-quaternary-fill);
+  border: 1px solid var(--macos-card-border);
+  color: var(--label-primary);
 }
 
-.result-top {
+.btn-action-sm:hover {
+  background-color: var(--system-blue-tint);
+  border-color: var(--system-blue);
+  color: var(--system-blue);
+}
+
+.btn-ghost-sm {
+  font-size: 0.76rem;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--label-tertiary);
+}
+
+.btn-ghost-sm:hover {
+  background-color: var(--system-red-tint);
+  color: var(--system-red);
+}
+
+.btn-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.btn-sm-icon {
+  width: 13px;
+  height: 13px;
+}
+
+/* ==========================================================================
+   Panel de Resultado (Hero Card con Colores Apple)
+   ========================================================================== */
+.result-card {
+  border: 1px solid var(--system-blue-tint);
+  position: relative;
+  overflow: hidden;
+}
+
+.result-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-.result-top h2 {
-  font-size: 0.82rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  font-weight: 700;
+.result-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 
-.btn-link {
-  background: none;
-  border: none;
-  color: var(--accent-color);
-  font-size: 0.82rem;
-  font-family: inherit;
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--system-green);
+  box-shadow: 0 0 8px var(--system-green);
+}
+
+.status-text {
+  font-size: 0.76rem;
   font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--label-secondary);
 }
 
-.btn-link:hover {
-  color: var(--accent-hover);
+.result-display {
+  margin: 4px 0 16px;
 }
 
-.result-value-box {
+.result-number-group {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin: 4px 0 8px;
+  gap: 10px;
 }
 
 .result-number {
-  font-size: 2.2rem;
+  font-size: 3.2rem;
   font-weight: 700;
-  color: var(--accent-color);
-  font-family: var(--font-mono);
   line-height: 1;
+  font-family: var(--font-apple-mono);
+  color: var(--system-blue);
+  letter-spacing: -0.03em;
 }
 
 .result-unit {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--label-secondary);
 }
 
-.result-text {
+.result-summary {
   font-size: 0.88rem;
-  color: var(--text-primary);
+  color: var(--label-primary);
   line-height: 1.45;
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border-subtle);
+  margin-top: 6px;
 }
 
+/* Inset Metric Pills */
 .result-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
-  font-size: 0.8rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--separator);
 }
 
-.metric-box {
+.metric-card {
+  background-color: var(--macos-card-inset);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--hairline);
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .metric-label {
-  color: var(--text-muted);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
+  color: var(--label-tertiary);
+  font-weight: 500;
 }
 
-.metric-val {
-  font-family: var(--font-mono);
+.metric-value {
+  font-family: var(--font-apple-mono);
+  font-size: 0.88rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--label-primary);
 }
 
-/* Acordeón y detalles */
-.details-panel {
-  padding: 0;
+/* ==========================================================================
+   Desglose Matemático (macOS Inspector Style)
+   ========================================================================== */
+.apple-disclosure {
+  display: flex;
+  flex-direction: column;
 }
 
-.panel-summary {
-  padding: 12px 16px;
-  cursor: pointer;
-  user-select: none;
-  list-style: none;
+.disclosure-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  padding: 2px 0;
 }
 
-.panel-summary::-webkit-details-marker {
+.disclosure-header::-webkit-details-marker {
   display: none;
 }
 
-/* Indicador nativo de summary */
-.panel-summary {
-  list-style: revert;
+.disclosure-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.panel-summary h3 {
-  font-size: 0.9rem;
+.disclosure-chevron {
+  width: 15px;
+  height: 15px;
+  color: var(--label-tertiary);
+  transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.apple-disclosure[open] .disclosure-chevron {
+  transform: rotate(90deg);
+}
+
+.disclosure-header h3 {
+  font-size: 0.92rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--label-primary);
 }
 
-.panel-body {
-  padding: 14px 16px;
-  border-top: 1px solid var(--border-subtle);
-  background-color: var(--bg-page);
+.disclosure-badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--label-tertiary);
+  background-color: var(--macos-card-inset);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
 }
 
-/* Desglose matemático */
-.formula-intro {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
+.disclosure-content {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--separator);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.formula-box {
-  background-color: var(--bg-panel);
-  border: 1px solid var(--border-color);
-  padding: 8px 12px;
-  margin-bottom: 12px;
-  border-radius: 3px;
-  overflow-x: auto;
-  font-family: var(--font-mono);
+.formula-label {
+  font-size: 0.8rem;
+  color: var(--label-secondary);
+}
+
+.apple-code-box {
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-family: var(--font-apple-mono);
   font-size: 0.82rem;
-  color: var(--text-primary);
+  color: var(--label-primary);
+  overflow-x: auto;
 }
 
-.steps-list {
+.steps-grid {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.step-item {
-  background-color: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: 3px;
-  padding: 10px 12px;
+.apple-step-card {
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 10px;
+  padding: 10px 14px;
 }
 
-.step-name {
-  font-size: 0.78rem;
-  font-weight: 700;
+.step-card-header {
+  font-size: 0.76rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--accent-color);
+  letter-spacing: 0.03em;
+  color: var(--system-blue);
   margin-bottom: 4px;
 }
 
-.step-math {
-  font-family: var(--font-mono);
+.step-card-math {
+  font-family: var(--font-apple-mono);
   font-size: 0.82rem;
-  color: var(--text-primary);
-  line-height: 1.4;
+  line-height: 1.45;
+  color: var(--label-primary);
   word-break: break-all;
 }
 
-/* Tabla de sensibilidad */
-.panel-header h3 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.panel-desc {
+/* ==========================================================================
+   Tabla de Sensibilidad (macOS Numbers Style)
+   ========================================================================== */
+.table-description {
   font-size: 0.82rem;
-  color: var(--text-secondary);
-  margin: 3px 0 10px;
+  color: var(--label-secondary);
+  margin: -6px 0 12px;
 }
 
-.table-container {
+.apple-table-wrapper {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid var(--border-color);
-  border-radius: 3px;
+  border: 1px solid var(--macos-card-border);
+  border-radius: 12px;
+  background-color: var(--macos-card-inset);
 }
 
-.data-table {
+.apple-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   text-align: right;
 }
 
-.data-table th, .data-table td {
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--border-subtle);
+.apple-table th, .apple-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--hairline);
 }
 
-.data-table th {
-  background-color: var(--bg-subtle);
-  color: var(--text-secondary);
+.apple-table th {
+  background-color: var(--system-quaternary-fill);
+  color: var(--label-secondary);
   font-weight: 600;
   font-size: 0.78rem;
-  text-align: right;
   white-space: nowrap;
 }
 
-.data-table th:first-child,
-.data-table td:first-child {
-  text-align: left;
-  font-weight: 600;
-  color: var(--text-primary);
+.th-z {
+  font-family: var(--font-apple-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  opacity: 0.75;
 }
 
-.data-table tbody tr:last-child td {
+.apple-table th.th-margin,
+.apple-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+}
+
+.apple-table td {
+  font-family: var(--font-apple-mono);
+  color: var(--label-primary);
+}
+
+.apple-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.data-table td {
-  font-family: var(--font-mono);
-  color: var(--text-primary);
+.apple-table tbody tr:hover td {
+  background-color: var(--system-quaternary-fill);
 }
 
-.data-table td.cell-active {
-  background-color: var(--accent-active-bg);
+.apple-table td.cell-active {
+  background-color: var(--system-blue-tint);
+  color: var(--system-blue);
   font-weight: 700;
-  color: var(--accent-color);
 }
 
-/* Sección Teórica */
-.theory-body {
+/* ==========================================================================
+   Fundamentación Teórica
+   ========================================================================== */
+.theory-content {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.theory-block h4 {
-  font-size: 0.86rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 3px;
+.theory-item {
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 10px;
+  padding: 12px 14px;
 }
 
-.theory-block p {
+.theory-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.theory-item-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--system-blue);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.theory-item h4 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--label-primary);
+}
+
+.theory-item p {
   font-size: 0.82rem;
-  color: var(--text-secondary);
+  color: var(--label-secondary);
   line-height: 1.45;
 }
 
-.theory-block ul {
-  list-style: disc;
-  padding-left: 18px;
-  margin-top: 4px;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-/* Historial */
-.history-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.history-header h3 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.btn-link-sm {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 0.76rem;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-}
-
-.btn-link-sm:hover {
-  color: var(--color-error);
-}
-
-.history-list {
+/* ==========================================================================
+   Historial (Apple Notes / Reminders Style)
+   ========================================================================== */
+.apple-history-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.history-row {
+.apple-history-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 10px;
-  background-color: var(--bg-page);
-  border: 1px solid var(--border-subtle);
-  border-radius: 3px;
-  font-size: 0.8rem;
+  padding: 8px 12px;
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  transition: background-color 0.15s ease;
 }
 
-.history-info {
-  color: var(--text-secondary);
+.apple-history-item:hover {
+  background-color: var(--system-quaternary-fill);
 }
 
-.history-info strong {
-  color: var(--text-primary);
+.history-details {
+  color: var(--label-secondary);
 }
 
-.history-action {
+.history-details strong {
+  color: var(--label-primary);
+}
+
+.history-time {
+  font-size: 0.72rem;
+  color: var(--label-tertiary);
+  margin-left: 6px;
+}
+
+.history-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .history-badge {
-  font-family: var(--font-mono);
+  font-family: var(--font-apple-mono);
   font-weight: 700;
-  color: var(--accent-color);
-}
-
-.btn-load {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  border-radius: 3px;
-  padding: 2px 6px;
-  font-size: 0.72rem;
-  cursor: pointer;
-}
-
-.btn-load:hover {
-  background-color: var(--bg-subtle);
-}
-
-.history-empty {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  font-style: italic;
-}
-
-/* Pie de página */
-.footer {
-  border-top: 1px solid var(--border-color);
-  padding-top: 12px;
-  text-align: center;
-  color: var(--text-muted);
+  color: var(--system-blue);
+  background-color: var(--system-blue-tint);
+  padding: 2px 8px;
+  border-radius: 6px;
   font-size: 0.78rem;
 }
 
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background-color: #111827;
+.btn-load {
+  background-color: var(--system-secondary-fill);
+  border: 1px solid transparent;
+  color: var(--label-primary);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.74rem;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-load:hover {
+  background-color: var(--system-blue);
   color: #ffffff;
-  padding: 8px 16px;
-  border-radius: 4px;
+}
+
+.history-empty {
+  color: var(--label-tertiary);
   font-size: 0.82rem;
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  font-style: italic;
+  text-align: center;
+  padding: 12px 0;
+}
+
+/* ==========================================================================
+   Pie de Ventana (Statusbar)
+   ========================================================================== */
+.window-statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 18px;
+  border-top: 1px solid var(--separator);
+  background-color: var(--macos-card-inset);
+  font-size: 0.72rem;
+  color: var(--label-tertiary);
+  user-select: none;
+}
+
+.statusbar-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-indicator-mini {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--system-green);
+}
+
+/* ==========================================================================
+   Dynamic Island / HUD Toast estilo Apple
+   ========================================================================== */
+.apple-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-70px) scale(0.92);
   z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
 }
 
-[data-theme="dark"] .toast {
-  background-color: #f8fafc;
-  color: #0f172a;
-}
-
-.toast.toast-show {
-  transform: translateX(-50%) translateY(0);
+.apple-toast.toast-show {
+  transform: translateX(-50%) translateY(0) scale(1);
   opacity: 1;
 }
 
-.mono-text {
-  font-family: var(--font-mono);
+.toast-inner {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background-color: rgba(30, 30, 32, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  box-shadow: var(--floating-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+[data-theme="dark"] .toast-inner {
+  background-color: rgba(245, 245, 247, 0.94);
+  color: #000000;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.toast-check-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--system-green);
+}
+
+/* ==========================================================================
+   Responsive Adaptations (iOS / iPadOS)
+   ========================================================================== */
+@media (max-width: 580px) {
+  body {
+    padding: 12px 8px;
+  }
+
+  .macos-window {
+    border-radius: 16px;
+  }
+
+  .window-content {
+    padding: 14px 14px 20px;
+    gap: 12px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .result-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-number {
+    font-size: 2.5rem;
+  }
+
+  .window-statusbar {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
 }

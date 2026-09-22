@@ -6,13 +6,16 @@ Enlace público en GitHub Pages: [https://ch4r-j0sh-sv.github.io/Calculadora_mue
 
 ---
 
-## 1. Objetivo del Proyecto
+## 1. Novedades de la Versión V0.3 (Edición Apple macOS / iOS)
 
-Proveer una herramienta de cálculo de tamaño muestral sobria, precisa y transparente, con énfasis en el rigor metodológico y pedagógico:
+Esta versión incorpora un rediseño completo inspirado en los sistemas operativos de Apple (**macOS Sequoia / iOS 18**), logrando una apariencia limpia, moderna y natural:
 
-- **Desglose paso a paso:** Muestra las operaciones algebraicas intermedias (numerador, denominador, corrección de población y redondeo por exceso).
-- **Tabla de sensibilidad:** Calcula dinámicamente una matriz de muestras cruzando márgenes de error del 1% al 10% con los niveles de confianza del 90%, 95% y 99%.
-- **Diseño académico:** Enfoque funcional sin elementos distractores ni estridencias visuales.
+- **Estética de Vidrio Esmerilado (*Vibrancy & Frosted Glass*):** Ventana central con desenfoque de fondo dinámico (`backdrop-filter: blur(36px)`), bordes translúcidos y sombras multicapa hiperrealistas.
+- **Barra de Título macOS:** Botones de ventana nativos (*traffic lights* en rojo, amarillo y verde) e indicador de versión.
+- **Interruptor de Modo Oscuro estilo iOS:** Switch con animación elástica (*spring physics*), soporte de modo claro y oscuro persistente en `localStorage`.
+- **Segmented Control de Apple:** Selector táctil fluido para los niveles de confianza (90%, 95%, 99%).
+- **Notificaciones HUD / Dynamic Island:** Avisos flotantes en píldora con micro-iconos de confirmación.
+- **Cero emojis:** Sustitución total de emojis por iconografía vectorial SVG de precisión inspirada en *SF Symbols*.
 
 ---
 
@@ -53,21 +56,29 @@ Cálculo:
 
 ---
 
-## 3. Estructura de Archivos
+## 3. Estructura del Proyecto
 
 ```
 Calculadora muestral/
-  index.html      # Estructura semántica del formulario, resultados y secciones
-  styles.css      # Hoja de estilos (paleta institucional, modo oscuro, responsive)
-  script.js       # Lógica de cálculo, tabla dinámica, historial y portapapeles
+  index.html      # Estructura semántica con interfaz estilo macOS/iOS
+  styles.css      # Sistema de diseño Apple (Vibrancy, dark mode, SF Pro stack)
+  script.js       # Lógica matemática, segmented control, switch iOS, historial y portapapeles
   README.md       # Documentación técnica del proyecto
 ```
 
-El proyecto está construido íntegramente con HTML, CSS y JavaScript estándar (vanilla), sin dependencias externas, frameworks ni compiladores.
+Sin dependencias externas, frameworks ni librerías pesadas (100% vanilla HTML5, CSS3 y JavaScript moderno).
 
 ---
 
-## 4. Uso Local
+## 4. Historial de Versiones y Ramas Git
+
+- **`main`:** Versión actual **V0.3** con interfaz estilo Apple (macOS y iOS).
+- **`v0.2-respaldo` / `v0.2`:** Rama con la versión **V0.2** (interfaz sobria académica).
+- **`v0.1-respaldo`:** Rama con la versión inicial **V0.1**.
+
+---
+
+## 5. Uso Local
 
 Para abrir el proyecto localmente:
 
@@ -79,7 +90,7 @@ Para abrir el proyecto localmente:
    ```bash
    cd "Calculadora muestral"
    ```
-3. Abre `index.html` en tu navegador web, o inicia un servidor HTTP local básico:
+3. Abre `index.html` en tu navegador web, o inicia un servidor local:
    ```bash
    python3 -m http.server 8000
    ```
@@ -87,18 +98,17 @@ Para abrir el proyecto localmente:
 
 ---
 
-## 5. Publicación en GitHub Pages
+## 6. Publicación en GitHub Pages
 
 Para actualizar o publicar el sitio en GitHub Pages:
 
 1. Agrega y sube los cambios a la rama principal:
    ```bash
    git add .
-   git commit -m "Actualizar interfaz y estilos académicos"
+   git commit -m "V0.3"
    git push origin main
    ```
-2. En GitHub, entra a la pestaña **Settings** del repositorio.
-3. En el menú izquierdo, selecciona **Pages**.
-4. En **Build and deployment** > **Branch**, selecciona `main` y la carpeta `/ (root)`.
-5. Guarda los cambios. El sitio quedará disponible en:
+2. En GitHub, entra a **Settings** > **Pages**.
+3. En **Build and deployment** > **Branch**, selecciona `main` y `/ (root)`.
+4. El sitio estará disponible en:
    `https://ch4r-j0sh-sv.github.io/Calculadora_muestral/`

@@ -1,12 +1,13 @@
 /**
  * Calculadora de Tamaño de Muestra para Poblaciones Finitas
- * Lógica matemática pura, interfaz sobria y accesible.
+ * Sistema de Diseño Apple (macOS & iOS) — V0.3
+ * Cero emojis, interactividad nativa y rigor estadístico.
  */
 
 (function () {
   'use strict';
 
-  // Elementos DOM
+  // Referencias a elementos del DOM
   const form = document.getElementById('form-muestra');
   const inputN = document.getElementById('poblacion');
   const selectError = document.getElementById('error');
@@ -14,10 +15,17 @@
   const inputProporcion = document.getElementById('proporcion');
   const btnReset = document.getElementById('btn-reset');
   const btnCopiar = document.getElementById('btn-copiar');
+  const copyBtnText = document.getElementById('copy-btn-text');
+  const copyIcon = document.getElementById('copy-icon');
   const btnTheme = document.getElementById('theme-toggle');
   const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toast-message');
 
-  // Mensajes de error
+  // Segmented Control de Nivel de Confianza
+  const segmentedConfianza = document.getElementById('segmented-confianza');
+  const segmentBtns = segmentedConfianza ? segmentedConfianza.querySelectorAll('.segment-btn') : [];
+
+  // Mensajes de error de validación
   const errorN = document.getElementById('poblacion-error');
   const errorP = document.getElementById('proporcion-error');
 
@@ -33,12 +41,13 @@
   const btnLimpiarHistorial = document.getElementById('btn-limpiar-historial');
 
   let ultimoCalculo = null;
+  let toastTimer = null;
 
   const STORAGE_THEME_KEY = 'calc_muestra_theme';
   const STORAGE_HISTORY_KEY = 'calc_muestra_historial';
 
   /**
-   * Cálculo para población finita:
+   * Fórmula para población finita:
    * n = [ N · Z² · p(1-p) ] / [ e²(N-1) + Z² · p(1-p) ]
    */
   function calcularMuestra(N, Z, p, e) {
@@ -75,7 +84,7 @@
     };
   }
 
-  // Validaciones de formulario
+  // Validación de campos del formulario
   function validarFormulario() {
     let valido = true;
 
@@ -91,7 +100,7 @@
 
     const pVal = parseFloat(inputProporcion.value);
     if (isNaN(pVal) || pVal <= 0 || pVal >= 100) {
-      errorP.textContent = 'La proporción debe estar entre 1% y 99%.';
+      errorP.textContent = 'La proporción debe situarse entre 1% y 99%.';
       inputProporcion.classList.add('input-invalid');
       valido = false;
     } else {
@@ -109,18 +118,34 @@
     return `Z = ${Z.toFixed(3)}`;
   }
 
+  // Sincronización del Segmented Control
+  function sincronizarSegmentedControl(valorZ) {
+    segmentBtns.forEach(btn => {
+      const btnVal = parseFloat(btn.getAttribute('data-value'));
+      const esActivo = Math.abs(btnVal - valorZ) < 0.01;
+      if (esActivo) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-checked', 'true');
+      } else {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-checked', 'false');
+      }
+    });
+  }
+
   function actualizarUI(resultado) {
     ultimoCalculo = resultado;
 
     resultadoNumero.textContent = resultado.n.toLocaleString('es');
     resultadoDetalle.innerHTML = 
-      `Para una población de ${resultado.N.toLocaleString('es')}, con un margen de error ` +
-      `de ±${(resultado.e * 100).toFixed(0)}%, un nivel de confianza del ` +
-      `${obtenerTextoConfianza(resultado.Z).split(' ')[0]} y una proporción esperada del ${(resultado.p * 100).toFixed(0)}%.`;
+      `Para una población de <strong>${resultado.N.toLocaleString('es')}</strong>, con un margen de error ` +
+      `de <strong>±${(resultado.e * 100).toFixed(0)}%</strong>, un nivel de confianza del ` +
+      `<strong>${obtenerTextoConfianza(resultado.Z).split(' ')[0]}</strong> y una proporción esperada del <strong>${(resultado.p * 100).toFixed(0)}%</strong>.`;
 
     metaFraccion.textContent = `${resultado.fraccionMuestral.toFixed(2)}%`;
     metaExacto.textContent = resultado.cociente.toFixed(4);
 
+    sincronizarSegmentedControl(resultado.Z);
     renderizarDesglose(resultado);
     renderizarTablaSensibilidad(resultado.N, resultado.p, resultado.e, resultado.Z);
     guardarEnHistorial(resultado);
@@ -128,9 +153,9 @@
 
   function renderizarDesglose(res) {
     stepsContainer.innerHTML = `
-      <div class="step-item">
-        <div class="step-name">Paso 1: Variables identificadas</div>
-        <div class="step-math">
+      <div class="apple-step-card">
+        <div class="step-card-header">Paso 1: Variables Identificadas</div>
+        <div class="step-card-math">
           Población (N) = ${res.N.toLocaleString('es')}<br>
           Z = ${res.Z} → Z² = ${res.Z2.toFixed(4)}<br>
           p = ${res.p.toFixed(2)}, (1 - p) = ${res.q.toFixed(2)} → p(1 - p) = ${res.pq.toFixed(4)}<br>
@@ -138,35 +163,38 @@
         </div>
       </div>
 
-      <div class="step-item">
-        <div class="step-name">Paso 2: Cálculo del numerador</div>
-        <div class="step-math">
+      <div class="apple-step-card">
+        <div class="step-card-header">Paso 2: Cálculo del Numerador</div>
+        <div class="step-card-math">
           Numerador = N · Z² · p(1 - p)<br>
           Numerador = ${res.N.toLocaleString('es')} · ${res.Z2.toFixed(4)} · ${res.pq.toFixed(4)} = <strong>${res.numerador.toLocaleString('es', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}</strong>
         </div>
       </div>
 
-      <div class="step-item">
-        <div class="step-name">Paso 3: Cálculo del denominador</div>
-        <div class="step-math">
+      <div class="apple-step-card">
+        <div class="step-card-header">Paso 3: Cálculo del Denominador</div>
+        <div class="step-card-math">
           Denominador = [ e²(N - 1) ] + [ Z² · p(1 - p) ]<br>
           Denominador = [ ${res.e2.toFixed(4)} · ${(res.N - 1).toLocaleString('es')} ] + [ ${res.Z2.toFixed(4)} · ${res.pq.toFixed(4)} ]<br>
           Denominador = ${res.errorTerm.toFixed(4)} + ${res.varianzaTerm.toFixed(4)} = <strong>${res.denominador.toLocaleString('es', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}</strong>
         </div>
       </div>
 
-      <div class="step-item">
-        <div class="step-name">Paso 4: Cociente y redondeo</div>
-        <div class="step-math">
+      <div class="apple-step-card">
+        <div class="step-card-header">Paso 4: Cociente y Ajuste Final</div>
+        <div class="step-card-math">
           n = ${res.numerador.toFixed(4)} / ${res.denominador.toFixed(4)} = ${res.cociente.toFixed(6)}<br>
-          Redondeo hacia arriba: <strong>${res.n.toLocaleString('es')} personas</strong>
+          Redondeo al entero superior: <strong>${res.n.toLocaleString('es')} elementos</strong>
         </div>
       </div>
     `;
   }
 
   function renderizarTablaSensibilidad(N, p, eActivo, zActivo) {
-    tablaPoblacionLabel.textContent = `N = ${N.toLocaleString('es')}`;
+    if (tablaPoblacionLabel) {
+      tablaPoblacionLabel.textContent = `N = ${N.toLocaleString('es')}`;
+    }
+
     const errores = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10];
     const nivelesZ = [
       { z: 1.645 },
@@ -197,7 +225,7 @@
     tablaBody.innerHTML = html;
   }
 
-  // Historial
+  // Gestión de Almacenamiento Local (Historial)
   function cargarHistorial() {
     try {
       const data = localStorage.getItem(STORAGE_HISTORY_KEY);
@@ -240,14 +268,14 @@
       localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(historial));
       renderizarHistorial();
     } catch (e) {
-      // Ignorar si el almacenamiento local está restringido
+      // Ignorar si el almacenamiento local está desactivado
     }
   }
 
   function renderizarHistorial() {
     const historial = cargarHistorial();
     if (historial.length === 0) {
-      historialLista.innerHTML = '<p class="history-empty">No hay cálculos recientes.</p>';
+      historialLista.innerHTML = '<p class="history-empty">No hay registros recientes.</p>';
       return;
     }
 
@@ -255,15 +283,15 @@
     historial.forEach(item => {
       const confianzaPct = item.Z === 1.645 ? '90%' : item.Z === 1.96 ? '95%' : '99%';
       html += `
-        <div class="history-row">
-          <div class="history-info">
+        <div class="apple-history-item">
+          <div class="history-details">
             N = <strong>${item.N.toLocaleString('es')}</strong>, 
             e = ±${(item.e * 100).toFixed(0)}%, 
-            conf = ${confianzaPct}, 
+            Z = ${confianzaPct}, 
             p = ${(item.p * 100).toFixed(0)}%
-            <span style="opacity: 0.6; margin-left: 4px;">(${item.fecha})</span>
+            <span class="history-time">(${item.fecha})</span>
           </div>
-          <div class="history-action">
+          <div class="history-actions">
             <span class="history-badge">n = ${item.n.toLocaleString('es')}</span>
             <button type="button" class="btn-load" data-id="${item.id}">Cargar</button>
           </div>
@@ -281,14 +309,16 @@
           inputN.value = item.N;
           selectError.value = item.e.toString();
           selectConfianza.value = item.Z.toString();
+          sincronizarSegmentedControl(item.Z);
           inputProporcion.value = (item.p * 100).toString();
           ejecutarCalculo();
+          mostrarToast('Parámetros restaurados desde el historial');
         }
       });
     });
   }
 
-  // Modo Oscuro / Claro
+  // Modo Oscuro / Claro estilo Apple
   function inicializarTema() {
     const temaGuardado = localStorage.getItem(STORAGE_THEME_KEY);
     const prefiereOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -306,13 +336,13 @@
 
   function aplicarTema(tema) {
     document.documentElement.setAttribute('data-theme', tema);
-    btnTheme.textContent = tema === 'dark' ? 'Modo claro' : 'Modo oscuro';
+    const esOscuro = tema === 'dark';
+    btnTheme.setAttribute('aria-checked', esOscuro ? 'true' : 'false');
   }
 
-  // Notificación breve
-  let toastTimer = null;
+  // Notificación HUD estilo Dynamic Island
   function mostrarToast(mensaje) {
-    toast.textContent = mensaje;
+    toastMessage.textContent = mensaje;
     toast.classList.add('toast-show');
     toast.setAttribute('aria-hidden', 'false');
 
@@ -320,23 +350,23 @@
     toastTimer = setTimeout(() => {
       toast.classList.remove('toast-show');
       toast.setAttribute('aria-hidden', 'true');
-    }, 2500);
+    }, 2400);
   }
 
-  // Copiar resumen
+  // Copiar resumen al portapapeles
   function copiarResumen() {
     if (!ultimoCalculo) return;
 
     const texto = 
-`Resumen de cálculo de tamaño de muestra
-----------------------------------------
+`Resumen de cálculo de tamaño de muestra (macOS Edition)
+------------------------------------------------------
 Población (N): ${ultimoCalculo.N.toLocaleString('es')}
 Nivel de confianza: ${obtenerTextoConfianza(ultimoCalculo.Z)}
 Margen de error (e): ±${(ultimoCalculo.e * 100).toFixed(0)}%
 Proporción esperada (p): ${(ultimoCalculo.p * 100).toFixed(0)}%
 
 Resultado:
-Tamaño de muestra (n): ${ultimoCalculo.n.toLocaleString('es')} personas
+Tamaño de muestra (n): ${ultimoCalculo.n.toLocaleString('es')} elementos
 Valor sin redondear: ${ultimoCalculo.cociente.toFixed(4)}
 Fracción de muestreo: ${ultimoCalculo.fraccionMuestral.toFixed(2)}%
 
@@ -344,10 +374,15 @@ Fórmula: n = [ N · Z² · p(1-p) ] / [ e²(N-1) + Z² · p(1-p) ]
 Criterio: Redondeo hacia arriba al entero superior inmediato.`;
 
     const restaurarBoton = () => {
-      btnCopiar.textContent = 'Copiado';
+      copyBtnText.textContent = 'Copiado';
+      copyIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
       setTimeout(() => {
-        btnCopiar.textContent = 'Copiar resultado';
-      }, 1800);
+        copyBtnText.textContent = 'Copiar';
+        copyIcon.innerHTML = `
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        `;
+      }, 2000);
     };
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -355,14 +390,14 @@ Criterio: Redondeo hacia arriba al entero superior inmediato.`;
         mostrarToast('Resumen copiado al portapapeles');
         restaurarBoton();
       }).catch(() => {
-        copiarAlternativo(texto);
+        copiarAlternativo(texto, restaurarBoton);
       });
     } else {
-      copiarAlternativo(texto);
+      copiarAlternativo(texto, restaurarBoton);
     }
   }
 
-  function copiarAlternativo(texto) {
+  function copiarAlternativo(texto, callback) {
     const textarea = document.createElement('textarea');
     textarea.value = texto;
     textarea.style.position = 'fixed';
@@ -372,10 +407,7 @@ Criterio: Redondeo hacia arriba al entero superior inmediato.`;
     try {
       document.execCommand('copy');
       mostrarToast('Resumen copiado al portapapeles');
-      btnCopiar.textContent = 'Copiado';
-      setTimeout(() => {
-        btnCopiar.textContent = 'Copiar resultado';
-      }, 1800);
+      if (callback) callback();
     } catch (e) {
       mostrarToast('No se pudo copiar el texto');
     }
@@ -396,6 +428,7 @@ Criterio: Redondeo hacia arriba al entero superior inmediato.`;
     actualizarUI(resultado);
   }
 
+  // Escuchadores de eventos
   form.addEventListener('submit', function (ev) {
     ev.preventDefault();
     ejecutarCalculo();
@@ -420,7 +453,18 @@ Criterio: Redondeo hacia arriba al entero superior inmediato.`;
   });
 
   selectConfianza.addEventListener('change', () => {
+    sincronizarSegmentedControl(parseFloat(selectConfianza.value));
     if (validarFormulario()) ejecutarCalculo();
+  });
+
+  // Eventos de los botones del Segmented Control
+  segmentBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = btn.getAttribute('data-value');
+      selectConfianza.value = val;
+      sincronizarSegmentedControl(parseFloat(val));
+      if (validarFormulario()) ejecutarCalculo();
+    });
   });
 
   btnReset.addEventListener('click', function () {
@@ -432,7 +476,9 @@ Criterio: Redondeo hacia arriba al entero superior inmediato.`;
     errorP.textContent = '';
     inputN.classList.remove('input-invalid');
     inputProporcion.classList.remove('input-invalid');
+    sincronizarSegmentedControl(1.96);
     ejecutarCalculo();
+    mostrarToast('Parámetros restablecidos');
   });
 
   btnCopiar.addEventListener('click', copiarResumen);
@@ -447,6 +493,7 @@ Criterio: Redondeo hacia arriba al entero superior inmediato.`;
     }
   });
 
+  // Inicialización
   inicializarTema();
   renderizarHistorial();
   ejecutarCalculo();
