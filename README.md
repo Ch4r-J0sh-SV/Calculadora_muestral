@@ -1,33 +1,18 @@
 # Calculadora de Tamaño de Muestra para Poblaciones Finitas
 
-Una herramienta web estática, rigurosa y académica para determinar el tamaño muestral necesario en estudios cuantitativos con poblaciones finitas y variables dicotómicas, orientada a estudiantes, docentes e investigadores.
+Herramienta web para determinar el tamaño muestral necesario en estudios cuantitativos con poblaciones finitas y variables dicotómicas, orientada a docencia, investigación y proyectos estadísticos.
 
-🌐 **Demo en GitHub Pages:** [https://ch4r-j0sh-sv.github.io/Calculadora_muestral/](https://ch4r-j0sh-sv.github.io/Calculadora_muestral/)
-
----
-
-## 📌 Tabla de Contenidos
-
-1. [Objetivo y Enfoque](#objetivo-y-enfoque)
-2. [Fundamentación Matemática](#fundamentación-matemática)
-   - [Fórmula de Población Finita](#fórmula-de-población-finita)
-   - [Definición de Parámetros](#definición-de-parámetros)
-   - [Caso de Validación Paso a Paso](#caso-de-validación-paso-a-paso)
-3. [Características de la Herramienta](#características-de-la-herramienta)
-4. [Estructura del Proyecto](#estructura-del-proyecto)
-5. [Ejecución en Local](#ejecución-en-local)
-6. [Publicación en GitHub Pages](#publicación-en-github-pages)
-7. [Licencia y Créditos](#licencia-y-créditos)
+Enlace público en GitHub Pages: [https://ch4r-j0sh-sv.github.io/Calculadora_muestral/](https://ch4r-j0sh-sv.github.io/Calculadora_muestral/)
 
 ---
 
-## 1. Objetivo y Enfoque
+## 1. Objetivo del Proyecto
 
-El objetivo central de este proyecto es proveer una calculadora confiable, transparente y de diseño sobrio (estilo instrumental académico), evitando artificios gráficos distractores. Prioriza la comprensión matemática:
+Proveer una herramienta de cálculo de tamaño muestral sobria, precisa y transparente, con énfasis en el rigor metodológico y pedagógico:
 
-- **Transparencia:** Muestra el desglose algebraico paso a paso de cada cálculo.
-- **Análisis de sensibilidad:** Genera en tiempo real una matriz cruzada para evaluar cómo varía la muestra frente a distintos márgenes de error ($1\%$ a $10\%$) y niveles de confianza ($90\%$, $95\%$, $99\%$).
-- **Accesibilidad y ergonomía:** Soporte para modo oscuro/claro, navegación por teclado, historial en sesión local y copiado rápido de resultados al portapapeles.
+- **Desglose paso a paso:** Muestra las operaciones algebraicas intermedias (numerador, denominador, corrección de población y redondeo por exceso).
+- **Tabla de sensibilidad:** Calcula dinámicamente una matriz de muestras cruzando márgenes de error del 1% al 10% con los niveles de confianza del 90%, 95% y 99%.
+- **Diseño académico:** Enfoque funcional sin elementos distractores ni estridencias visuales.
 
 ---
 
@@ -35,118 +20,85 @@ El objetivo central de este proyecto es proveer una calculadora confiable, trans
 
 ### Fórmula de Población Finita
 
-Cuando se conoce el tamaño total de la población $N$, la selección de elementos reduce la varianza poblacional restante. Por tanto, se utiliza la corrección para poblaciones finitas:
+Para una población de tamaño conocido $N$, la fórmula de muestreo probabilístico simple para estimación de proporciones es:
 
 $$n = \frac{N \cdot Z^2 \cdot p(1-p)}{e^2(N-1) + Z^2 \cdot p(1-p)}$$
 
-Donde el resultado final $n$ siempre se redondea **hacia arriba** mediante la función techo ($\lceil n \rceil$), asegurando que el tamaño de muestra final satisfaga o supere la cota mínima de confiabilidad exigida:
+El resultado final se redondea hacia arriba mediante la función techo ($\lceil n \rceil$), ya que cualquier fracción decimal exige una unidad muestral completa adicional para garantizar el margen de error y el nivel de confianza establecidos:
 
 $$n_{\text{final}} = \min\left(\lceil n \rceil, N\right)$$
 
-### Definición de Parámetros
+### Parámetros
 
-| Símbolo | Parámetro | Rango habitual | Descripción |
+| Parámetro | Símbolo | Rango / Valores | Descripción |
 |---|---|---|---|
-| **$N$** | Tamaño de la población | Entero positivo $\ge 1$ | Universo o conjunto total de elementos a estudiar. |
-| **$Z$** | Coeficiente de confianza | 1.645 (90%), 1.960 (95%), 2.576 (99%) | Valor crítico de la distribución normal estandarizada $N(0, 1)$ correspondiente a $1 - \alpha$. |
-| **$e$** | Margen de error admisible | 0.01 a 0.10 (1% a 10%) | Diferencia máxima tolerada entre la proporción muestral y el parámetro real. |
-| **$p$** | Proporción esperada | 0.01 a 0.99 (50% por defecto) | Probabilidad a priori de ocurrencia del evento. Asumir $p=0.50$ maximiza la varianza ($p(1-p)=0.25$), otorgando el tamaño más seguro y conservador. |
+| Población | $N$ | Entero $\ge 1$ | Universo total de elementos bajo estudio. |
+| Coeficiente de confianza | $Z$ | 1.645 (90%), 1.960 (95%), 2.576 (99%) | Valor crítico de la distribución normal estandarizada. |
+| Margen de error | $e$ | 0.01 a 0.10 (1% a 10%) | Diferencia máxima admisible entre el estimador y el parámetro real. |
+| Proporción esperada | $p$ | 0.01 a 0.99 (50% por defecto) | Probabilidad a priori del evento. $p = 0.50$ maximiza la varianza $p(1-p) = 0.25$, siendo el criterio más conservador. |
 
-### Caso de Validación Paso a Paso
+### Caso de Validación de Referencia
 
-Tomando los parámetros de referencia:
+Parámetros:
 - $N = 2{,}800$
-- Margen de error $e = 5\% = 0.05 \implies e^2 = 0.0025$
-- Confianza $95\% \implies Z = 1.96 \implies Z^2 = 3.8416$
-- Proporción $p = 50\% = 0.50 \implies p(1-p) = 0.25$
+- $e = 5\% = 0.05$
+- Confianza = $95\% \implies Z = 1.96$
+- $p = 50\% = 0.50$
 
-**Paso 1: Cálculo del numerador**
-$$\text{Numerador} = N \cdot Z^2 \cdot p(1-p) = 2800 \times 3.8416 \times 0.25 = 2689.12$$
-
-**Paso 2: Cálculo del denominador**
-$$\text{Término de error} = e^2 \cdot (N - 1) = 0.0025 \times 2799 = 6.9975$$
-$$\text{Término de varianza} = Z^2 \cdot p(1-p) = 3.8416 \times 0.25 = 0.9604$$
-$$\text{Denominador} = 6.9975 + 0.9604 = 7.9579$$
-
-**Paso 3: Cociente y redondeo**
-$$n = \frac{2689.12}{7.9579} \approx 337.9183$$
-$$n_{\text{final}} = \lceil 337.9183 \rceil = \mathbf{338}\text{ individuos}$$
+Cálculo:
+1. Numerador: $2800 \cdot (1.96)^2 \cdot (0.5)(0.5) = 2800 \cdot 3.8416 \cdot 0.25 = 2689.12$
+2. Denominador: $(0.05)^2 \cdot (2799) + 3.8416 \cdot 0.25 = 6.9975 + 0.9604 = 7.9579$
+3. Cociente: $2689.12 / 7.9579 \approx 337.9183$
+4. Redondeo: $\lceil 337.9183 \rceil = \mathbf{338\text{ personas}}$
 
 ---
 
-## 3. Características de la Herramienta
-
-- 🧮 **Cálculo instantáneo:** Resultados en tiempo real con validaciones de rangos coherentes.
-- 📐 **Desglose algebraico interactivo:** Detalle desplegable con sustitución de variables y valores de pasos intermedios.
-- 📊 **Matriz de sensibilidad comparativa:** Tabla dinámica con resaltado de la celda activa seleccionada.
-- 📋 **Copiado estructurado:** Exporta un resumen formateado listo para anexar en informes o tesis.
-- 🕒 **Historial local:** Guarda los últimos 5 cálculos con opción de recargar parámetros o limpiar historial.
-- 🌓 **Modo oscuro integrado:** Selector ergonómico que respeta la configuración del sistema operativo (`prefers-color-scheme`).
-- 📱 **Diseño responsivo:** Optimizado tanto para dispositivos móviles como pantallas de escritorio.
-- 🖨️ **Estilos para impresión:** Oculta controles de navegación para exportar informes directamente en PDF (`Ctrl + P` / `Cmd + P`).
-
----
-
-## 4. Estructura del Proyecto
+## 3. Estructura de Archivos
 
 ```
-Calculadora_muestral/
-│
-├── index.html      # Marcado semántico accesible HTML5
-├── styles.css      # Sistema de diseño sobrio en CSS vanilla (soporte light/dark)
-├── script.js       # Lógica matemática, tabla interactiva, historial y DOM
-└── README.md       # Documentación técnica, fórmulas y guía de publicación
+Calculadora muestral/
+  index.html      # Estructura semántica del formulario, resultados y secciones
+  styles.css      # Hoja de estilos (paleta institucional, modo oscuro, responsive)
+  script.js       # Lógica de cálculo, tabla dinámica, historial y portapapeles
+  README.md       # Documentación técnica del proyecto
 ```
 
-No requiere gestores de paquetes (`npm`), frameworks pesados ni compiladores. Se ejecuta directamente en cualquier navegador moderno.
+El proyecto está construido íntegramente con HTML, CSS y JavaScript estándar (vanilla), sin dependencias externas, frameworks ni compiladores.
 
 ---
 
-## 5. Ejecución en Local
+## 4. Uso Local
 
-Para visualizar y trabajar en la herramienta de manera local:
+Para abrir el proyecto localmente:
 
-1. Clona o descarga el repositorio:
+1. Clona el repositorio:
    ```bash
    git clone https://github.com/Ch4r-J0sh-SV/Calculadora_muestral.git
    ```
-2. Abre la carpeta del proyecto:
+2. Entra al directorio:
    ```bash
-   cd Calculadora_muestral
+   cd "Calculadora muestral"
    ```
-3. Abre el archivo `index.html` en tu navegador web de preferencia (doble clic o usando un servidor estático como Live Server / Python):
+3. Abre `index.html` en tu navegador web, o inicia un servidor HTTP local básico:
    ```bash
-   # Opción con Python 3:
    python3 -m http.server 8000
    ```
-   Luego visita `http://localhost:8000` en tu navegador.
+   Luego visita `http://localhost:8000`.
 
 ---
 
-## 6. Publicación en GitHub Pages
+## 5. Publicación en GitHub Pages
 
-Para habilitar la versión en línea en GitHub:
+Para actualizar o publicar el sitio en GitHub Pages:
 
-1. Asegúrate de que los cambios estén subidos a la rama principal (`main`):
+1. Agrega y sube los cambios a la rama principal:
    ```bash
    git add .
-   git commit -m "Implementación de calculadora de tamaño de muestra completa"
+   git commit -m "Actualizar interfaz y estilos académicos"
    git push origin main
    ```
-2. En GitHub, ve a la pestaña **Settings** (Configuración) de tu repositorio `Calculadora_muestral`.
-3. En la barra lateral izquierda, haz clic en **Pages**.
-4. En la sección **Build and deployment** > **Source**:
-   - Selecciona **Deploy from a branch**.
-   - En **Branch**, elige `main` y la carpeta `/ (root)`.
-   - Haz clic en **Save** (Guardar).
-5. En pocos minutos, tu sitio estará accesible en:
-   ```
-   https://ch4r-j0sh-sv.github.io/Calculadora_muestral/
-   ```
-
----
-
-## 7. Licencia y Créditos
-
-Desarrollado para el curso de **Estadística Inferencial** (V Ciclo).
-Código abierto bajo licencia MIT. Libre para fines educativos, académicos y de investigación.
+2. En GitHub, entra a la pestaña **Settings** del repositorio.
+3. En el menú izquierdo, selecciona **Pages**.
+4. En **Build and deployment** > **Branch**, selecciona `main` y la carpeta `/ (root)`.
+5. Guarda los cambios. El sitio quedará disponible en:
+   `https://ch4r-j0sh-sv.github.io/Calculadora_muestral/`

@@ -1,12 +1,12 @@
 /**
  * Calculadora de Tamaño de Muestra para Poblaciones Finitas
- * Lógica matemática pura, interactividad accesible y persistencia local.
+ * Lógica matemática pura, interfaz sobria y accesible.
  */
 
 (function () {
   'use strict';
 
-  // --- Elementos DOM ---
+  // Elementos DOM
   const form = document.getElementById('form-muestra');
   const inputN = document.getElementById('poblacion');
   const selectError = document.getElementById('error');
@@ -32,23 +32,14 @@
   const historialLista = document.getElementById('historial-lista');
   const btnLimpiarHistorial = document.getElementById('btn-limpiar-historial');
 
-  // Estado del último cálculo realizado
   let ultimoCalculo = null;
 
-  // Claves de almacenamiento local
-  const STORAGE_THEME_KEY = 'calculadora_muestral_theme';
-  const STORAGE_HISTORY_KEY = 'calculadora_muestral_history';
+  const STORAGE_THEME_KEY = 'calc_muestra_theme';
+  const STORAGE_HISTORY_KEY = 'calc_muestra_historial';
 
-  // --- Función Matemática Central ---
   /**
-   * Calcula el tamaño de muestra según la fórmula de población finita:
+   * Cálculo para población finita:
    * n = [ N · Z² · p(1-p) ] / [ e²(N-1) + Z² · p(1-p) ]
-   *
-   * @param {number} N - Tamaño de la población (entero >= 1)
-   * @param {number} Z - Coeficiente de la distribución normal estándar
-   * @param {number} p - Proporción esperada (decimal entre 0 y 1)
-   * @param {number} e - Margen de error admisible (decimal entre 0 y 1)
-   * @returns {Object} Desglose completo de valores y resultado final
    */
   function calcularMuestra(N, Z, p, e) {
     const Z2 = Z ** 2;
@@ -60,7 +51,6 @@
     const denominador = errorTerm + varianzaTerm;
 
     const cociente = numerador / denominador;
-    // Redondeo por exceso estricto, sin sobrepasar la población N
     let nFinal = Math.ceil(cociente);
     if (nFinal > N) {
       nFinal = N;
@@ -85,11 +75,10 @@
     };
   }
 
-  // --- Validaciones ---
+  // Validaciones de formulario
   function validarFormulario() {
     let valido = true;
 
-    // Validación de N
     const NVal = parseInt(inputN.value, 10);
     if (isNaN(NVal) || NVal < 1) {
       errorN.textContent = 'Ingresa un número entero positivo mayor o igual a 1.';
@@ -100,10 +89,9 @@
       inputN.classList.remove('input-invalid');
     }
 
-    // Validación de p
     const pVal = parseFloat(inputProporcion.value);
     if (isNaN(pVal) || pVal <= 0 || pVal >= 100) {
-      errorP.textContent = 'La proporción debe estar estrictamente entre 1% y 99%.';
+      errorP.textContent = 'La proporción debe estar entre 1% y 99%.';
       inputProporcion.classList.add('input-invalid');
       valido = false;
     } else {
@@ -114,31 +102,6 @@
     return valido;
   }
 
-  // --- Actualización de la Interfaz ---
-  function actualizarUI(resultado) {
-    ultimoCalculo = resultado;
-
-    // 1. Métrica principal
-    resultadoNumero.textContent = resultado.n.toLocaleString('es');
-    resultadoDetalle.innerHTML = 
-      `Para una población finita de <strong>${resultado.N.toLocaleString('es')}</strong> elementos, ` +
-      `con un margen de error de <strong>±${(resultado.e * 100).toFixed(0)}%</strong>, ` +
-      `un nivel de confianza del <strong>${obtenerTextoConfianza(resultado.Z)}</strong> ` +
-      `y una proporción esperada del <strong>${(resultado.p * 100).toFixed(0)}%</strong>.`;
-
-    metaFraccion.textContent = `${resultado.fraccionMuestral.toFixed(2)}%`;
-    metaExacto.textContent = resultado.cociente.toFixed(4);
-
-    // 2. Desglose matemático paso a paso
-    renderizarDesglose(resultado);
-
-    // 3. Tabla de sensibilidad dinámica
-    renderizarTablaSensibilidad(resultado.N, resultado.p, resultado.e, resultado.Z);
-
-    // 4. Guardar en historial
-    guardarEnHistorial(resultado);
-  }
-
   function obtenerTextoConfianza(Z) {
     if (Math.abs(Z - 1.645) < 0.01) return '90% (Z = 1.645)';
     if (Math.abs(Z - 1.96) < 0.01) return '95% (Z = 1.960)';
@@ -146,43 +109,57 @@
     return `Z = ${Z.toFixed(3)}`;
   }
 
+  function actualizarUI(resultado) {
+    ultimoCalculo = resultado;
+
+    resultadoNumero.textContent = resultado.n.toLocaleString('es');
+    resultadoDetalle.innerHTML = 
+      `Para una población de ${resultado.N.toLocaleString('es')}, con un margen de error ` +
+      `de ±${(resultado.e * 100).toFixed(0)}%, un nivel de confianza del ` +
+      `${obtenerTextoConfianza(resultado.Z).split(' ')[0]} y una proporción esperada del ${(resultado.p * 100).toFixed(0)}%.`;
+
+    metaFraccion.textContent = `${resultado.fraccionMuestral.toFixed(2)}%`;
+    metaExacto.textContent = resultado.cociente.toFixed(4);
+
+    renderizarDesglose(resultado);
+    renderizarTablaSensibilidad(resultado.N, resultado.p, resultado.e, resultado.Z);
+    guardarEnHistorial(resultado);
+  }
+
   function renderizarDesglose(res) {
     stepsContainer.innerHTML = `
-      <div class="step-card">
-        <div class="step-title">Paso 1: Variables y constantes identificadas</div>
-        <div class="step-calc">
-          • Población (N) = ${res.N.toLocaleString('es')}<br>
-          • Nivel de confianza Z = ${res.Z} → Z² = ${res.Z2.toFixed(4)}<br>
-          • Proporción (p) = ${res.p.toFixed(2)}, (1 - p) = ${res.q.toFixed(2)} → Varianza p·(1-p) = ${res.pq.toFixed(4)}<br>
-          • Margen de error (e) = ${res.e.toFixed(2)} → e² = ${res.e2.toFixed(4)}, (N - 1) = ${(res.N - 1).toLocaleString('es')}
+      <div class="step-item">
+        <div class="step-name">Paso 1: Variables identificadas</div>
+        <div class="step-math">
+          Población (N) = ${res.N.toLocaleString('es')}<br>
+          Z = ${res.Z} → Z² = ${res.Z2.toFixed(4)}<br>
+          p = ${res.p.toFixed(2)}, (1 - p) = ${res.q.toFixed(2)} → p(1 - p) = ${res.pq.toFixed(4)}<br>
+          e = ${res.e.toFixed(2)} → e² = ${res.e2.toFixed(4)}, (N - 1) = ${(res.N - 1).toLocaleString('es')}
         </div>
       </div>
 
-      <div class="step-card">
-        <div class="step-title">Paso 2: Cálculo del numerador</div>
-        <div class="step-calc">
-          Numerador = N · Z² · p · (1 - p)<br>
-          Numerador = ${res.N.toLocaleString('es')} · ${res.Z2.toFixed(4)} · ${res.pq.toFixed(4)}<br>
-          <strong>Numerador = ${res.numerador.toLocaleString('es', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}</strong>
+      <div class="step-item">
+        <div class="step-name">Paso 2: Cálculo del numerador</div>
+        <div class="step-math">
+          Numerador = N · Z² · p(1 - p)<br>
+          Numerador = ${res.N.toLocaleString('es')} · ${res.Z2.toFixed(4)} · ${res.pq.toFixed(4)} = <strong>${res.numerador.toLocaleString('es', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}</strong>
         </div>
       </div>
 
-      <div class="step-card">
-        <div class="step-title">Paso 3: Cálculo del denominador (con corrección de población)</div>
-        <div class="step-calc">
-          Denominador = [ e² · (N - 1) ] + [ Z² · p · (1 - p) ]<br>
+      <div class="step-item">
+        <div class="step-name">Paso 3: Cálculo del denominador</div>
+        <div class="step-math">
+          Denominador = [ e²(N - 1) ] + [ Z² · p(1 - p) ]<br>
           Denominador = [ ${res.e2.toFixed(4)} · ${(res.N - 1).toLocaleString('es')} ] + [ ${res.Z2.toFixed(4)} · ${res.pq.toFixed(4)} ]<br>
-          Denominador = ${res.errorTerm.toFixed(4)} + ${res.varianzaTerm.toFixed(4)}<br>
-          <strong>Denominador = ${res.denominador.toLocaleString('es', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}</strong>
+          Denominador = ${res.errorTerm.toFixed(4)} + ${res.varianzaTerm.toFixed(4)} = <strong>${res.denominador.toLocaleString('es', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}</strong>
         </div>
       </div>
 
-      <div class="step-card">
-        <div class="step-title">Paso 4: Cociente y redondeo por exceso</div>
-        <div class="step-calc">
-          n = Numerador / Denominador = ${res.numerador.toFixed(4)} / ${res.denominador.toFixed(4)}<br>
-          n (decimal continuo) = <strong>${res.cociente.toFixed(6)}</strong><br>
-          Aplicando techo formal ⌈n⌉: ⌈${res.cociente.toFixed(4)}⌉ = <strong>${res.n.toLocaleString('es')} personas</strong>
+      <div class="step-item">
+        <div class="step-name">Paso 4: Cociente y redondeo</div>
+        <div class="step-math">
+          n = ${res.numerador.toFixed(4)} / ${res.denominador.toFixed(4)} = ${res.cociente.toFixed(6)}<br>
+          Redondeo hacia arriba: <strong>${res.n.toLocaleString('es')} personas</strong>
         </div>
       </div>
     `;
@@ -192,25 +169,24 @@
     tablaPoblacionLabel.textContent = `N = ${N.toLocaleString('es')}`;
     const errores = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10];
     const nivelesZ = [
-      { z: 1.645, label: '90%' },
-      { z: 1.96, label: '95%' },
-      { z: 2.576, label: '99%' }
+      { z: 1.645 },
+      { z: 1.96 },
+      { z: 2.576 }
     ];
 
     let html = '';
-
     errores.forEach(err => {
       const pctError = (err * 100).toFixed(0);
       const isCurrentError = Math.abs(err - eActivo) < 0.001;
 
       html += `<tr>`;
-      html += `<td><strong>±${pctError}%</strong></td>`;
+      html += `<td>±${pctError}%</td>`;
 
       nivelesZ.forEach(conf => {
         const calc = calcularMuestra(N, conf.z, p, err);
         const isCurrentZ = Math.abs(conf.z - zActivo) < 0.01;
         const isActiveCell = isCurrentError && isCurrentZ;
-        const cellClass = isActiveCell ? 'class="cell-active" title="Combinación actualmente seleccionada"' : '';
+        const cellClass = isActiveCell ? 'class="cell-active"' : '';
 
         html += `<td ${cellClass}>${calc.n.toLocaleString('es')}</td>`;
       });
@@ -221,13 +197,12 @@
     tablaBody.innerHTML = html;
   }
 
-  // --- Historial Local ---
+  // Historial
   function cargarHistorial() {
     try {
       const data = localStorage.getItem(STORAGE_HISTORY_KEY);
       return data ? JSON.parse(data) : [];
     } catch (e) {
-      console.warn('No se pudo acceder al historial local', e);
       return [];
     }
   }
@@ -245,7 +220,6 @@
         fecha: new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })
       };
 
-      // Evitar duplicados inmediatos idénticos
       if (historial.length > 0) {
         const ultimo = historial[0];
         if (
@@ -266,14 +240,14 @@
       localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(historial));
       renderizarHistorial();
     } catch (e) {
-      console.warn('Error al guardar historial:', e);
+      // Ignorar si el almacenamiento local está restringido
     }
   }
 
   function renderizarHistorial() {
     const historial = cargarHistorial();
     if (historial.length === 0) {
-      historialLista.innerHTML = '<p class="history-empty">No hay cálculos recientes registrados.</p>';
+      historialLista.innerHTML = '<p class="history-empty">No hay cálculos recientes.</p>';
       return;
     }
 
@@ -281,17 +255,17 @@
     historial.forEach(item => {
       const confianzaPct = item.Z === 1.645 ? '90%' : item.Z === 1.96 ? '95%' : '99%';
       html += `
-        <div class="history-item">
-          <div class="history-params">
-            N = <strong>${item.N.toLocaleString('es')}</strong> | 
-            e = ±${(item.e * 100).toFixed(0)}% | 
-            Conf = ${confianzaPct} | 
+        <div class="history-row">
+          <div class="history-info">
+            N = <strong>${item.N.toLocaleString('es')}</strong>, 
+            e = ±${(item.e * 100).toFixed(0)}%, 
+            conf = ${confianzaPct}, 
             p = ${(item.p * 100).toFixed(0)}%
-            <span style="opacity: 0.6; margin-left: 6px;">(${item.fecha})</span>
+            <span style="opacity: 0.6; margin-left: 4px;">(${item.fecha})</span>
           </div>
-          <div class="history-result">
+          <div class="history-action">
             <span class="history-badge">n = ${item.n.toLocaleString('es')}</span>
-            <button type="button" class="btn-history-load" data-id="${item.id}" title="Cargar estos parámetros en el formulario">Cargar</button>
+            <button type="button" class="btn-load" data-id="${item.id}">Cargar</button>
           </div>
         </div>
       `;
@@ -299,8 +273,7 @@
 
     historialLista.innerHTML = html;
 
-    // Asignar listeners a los botones de carga
-    historialLista.querySelectorAll('.btn-history-load').forEach(btn => {
+    historialLista.querySelectorAll('.btn-load').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = Number(btn.getAttribute('data-id'));
         const item = historial.find(h => h.id === id);
@@ -315,12 +288,12 @@
     });
   }
 
-  // --- Modo Oscuro / Claro ---
+  // Modo Oscuro / Claro
   function inicializarTema() {
     const temaGuardado = localStorage.getItem(STORAGE_THEME_KEY);
     const prefiereOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-
     const temaInicial = temaGuardado || (prefiereOscuro ? 'dark' : 'light');
+
     aplicarTema(temaInicial);
 
     btnTheme.addEventListener('click', () => {
@@ -333,18 +306,10 @@
 
   function aplicarTema(tema) {
     document.documentElement.setAttribute('data-theme', tema);
-    const icon = btnTheme.querySelector('.theme-icon');
-    const label = btnTheme.querySelector('.theme-text');
-    if (tema === 'dark') {
-      icon.textContent = '☀️';
-      label.textContent = 'Cambiar a modo claro';
-    } else {
-      icon.textContent = '🌙';
-      label.textContent = 'Cambiar a modo oscuro';
-    }
+    btnTheme.textContent = tema === 'dark' ? 'Modo claro' : 'Modo oscuro';
   }
 
-  // --- Notificación Toast ---
+  // Notificación breve
   let toastTimer = null;
   function mostrarToast(mensaje) {
     toast.textContent = mensaje;
@@ -355,32 +320,40 @@
     toastTimer = setTimeout(() => {
       toast.classList.remove('toast-show');
       toast.setAttribute('aria-hidden', 'true');
-    }, 2800);
+    }, 2500);
   }
 
-  // --- Copiar Resumen al Portapapeles ---
+  // Copiar resumen
   function copiarResumen() {
     if (!ultimoCalculo) return;
 
     const texto = 
-`--- RESUMEN DE CÁLCULO DE TAMAÑO DE MUESTRA ---
-Población total (N): ${ultimoCalculo.N.toLocaleString('es')}
+`Resumen de cálculo de tamaño de muestra
+----------------------------------------
+Población (N): ${ultimoCalculo.N.toLocaleString('es')}
 Nivel de confianza: ${obtenerTextoConfianza(ultimoCalculo.Z)}
 Margen de error (e): ±${(ultimoCalculo.e * 100).toFixed(0)}%
 Proporción esperada (p): ${(ultimoCalculo.p * 100).toFixed(0)}%
 
-RESULTADO FINAL:
-Tamaño de muestra requerido (n): ${ultimoCalculo.n.toLocaleString('es')} personas/elementos
-Valor exacto sin redondear: ${ultimoCalculo.cociente.toFixed(4)}
-Fracción muestral (n/N): ${ultimoCalculo.fraccionMuestral.toFixed(2)}%
+Resultado:
+Tamaño de muestra (n): ${ultimoCalculo.n.toLocaleString('es')} personas
+Valor sin redondear: ${ultimoCalculo.cociente.toFixed(4)}
+Fracción de muestreo: ${ultimoCalculo.fraccionMuestral.toFixed(2)}%
 
 Fórmula: n = [ N · Z² · p(1-p) ] / [ e²(N-1) + Z² · p(1-p) ]
-Criterio: Redondeo formal hacia arriba (Techo: ⌈n⌉)
-Calculado mediante Calculadora de Tamaño de Muestra.`;
+Criterio: Redondeo hacia arriba al entero superior inmediato.`;
+
+    const restaurarBoton = () => {
+      btnCopiar.textContent = 'Copiado';
+      setTimeout(() => {
+        btnCopiar.textContent = 'Copiar resultado';
+      }, 1800);
+    };
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(texto).then(() => {
-        mostrarToast('✓ Resumen copiado al portapapeles');
+        mostrarToast('Resumen copiado al portapapeles');
+        restaurarBoton();
       }).catch(() => {
         copiarAlternativo(texto);
       });
@@ -398,14 +371,17 @@ Calculado mediante Calculadora de Tamaño de Muestra.`;
     textarea.select();
     try {
       document.execCommand('copy');
-      mostrarToast('✓ Resumen copiado al portapapeles');
+      mostrarToast('Resumen copiado al portapapeles');
+      btnCopiar.textContent = 'Copiado';
+      setTimeout(() => {
+        btnCopiar.textContent = 'Copiar resultado';
+      }, 1800);
     } catch (e) {
-      mostrarToast('No se pudo copiar automáticamente');
+      mostrarToast('No se pudo copiar el texto');
     }
     document.body.removeChild(textarea);
   }
 
-  // --- Ejecución del Cálculo ---
   function ejecutarCalculo() {
     if (!validarFormulario()) {
       return;
@@ -420,13 +396,11 @@ Calculado mediante Calculadora de Tamaño de Muestra.`;
     actualizarUI(resultado);
   }
 
-  // --- Event Listeners ---
   form.addEventListener('submit', function (ev) {
     ev.preventDefault();
     ejecutarCalculo();
   });
 
-  // Limpiar errores mientras el usuario teclea
   inputN.addEventListener('input', () => {
     if (inputN.value) {
       errorN.textContent = '';
@@ -441,7 +415,6 @@ Calculado mediante Calculadora de Tamaño de Muestra.`;
     }
   });
 
-  // Recalcular al cambiar selects de forma inmediata para mayor fluidez
   selectError.addEventListener('change', () => {
     if (validarFormulario()) ejecutarCalculo();
   });
@@ -470,12 +443,11 @@ Calculado mediante Calculadora de Tamaño de Muestra.`;
       renderizarHistorial();
       mostrarToast('Historial vaciado');
     } catch (e) {
-      console.warn('Error al limpiar historial:', e);
+      // Ignorar
     }
   });
 
-  // --- Inicialización al Cargar ---
   inicializarTema();
   renderizarHistorial();
-  ejecutarCalculo(); // Realiza el cálculo del caso de referencia por defecto al iniciar
+  ejecutarCalculo();
 })();
