@@ -1,58 +1,63 @@
-# Calculadora de Tamaño de Muestra para Poblaciones Finitas
+# Calculadora Estadística — Muestra y Dispersión
 
-Herramienta web para determinar el tamaño muestral necesario en estudios cuantitativos con poblaciones finitas y variables dicotómicas, orientada a docencia, investigación y proyectos estadísticos.
+Herramienta web interactiva para estadística inferencial y descriptiva. Incluye dos módulos principales: determinación del tamaño muestral para poblaciones finitas y análisis comparativo de dispersión (desviación estándar poblacional y muestral) con gráficos nativos en Canvas.
 
 Enlace público en GitHub Pages: [https://ch4r-j0sh-sv.github.io/Calculadora_muestral/](https://ch4r-j0sh-sv.github.io/Calculadora_muestral/)
 
 ---
 
-## 1. Novedades de la Versión V0.3 (Edición Apple macOS / iOS)
+## 1. Novedades de la Versión V0.4 (Módulo de Dispersión & Gráficos)
 
-Esta versión incorpora un rediseño completo inspirado en los sistemas operativos de Apple (**macOS Sequoia / iOS 18**), logrando una apariencia limpia, moderna y natural:
+Esta versión amplía la calculadora con un módulo de análisis de dispersión y un motor gráfico nativo sin librerías externas:
 
-- **Estética de Vidrio Esmerilado (*Vibrancy & Frosted Glass*):** Ventana central con desenfoque de fondo dinámico (`backdrop-filter: blur(36px)`), bordes translúcidos y sombras multicapa hiperrealistas.
-- **Barra de Título macOS:** Botones de ventana nativos (*traffic lights* en rojo, amarillo y verde) e indicador de versión.
-- **Interruptor de Modo Oscuro estilo iOS:** Switch con animación elástica (*spring physics*), soporte de modo claro y oscuro persistente en `localStorage`.
-- **Segmented Control de Apple:** Selector táctil fluido para los niveles de confianza (90%, 95%, 99%).
-- **Notificaciones HUD / Dynamic Island:** Avisos flotantes en píldora con micro-iconos de confirmación.
-- **Cero emojis:** Sustitución total de emojis por iconografía vectorial SVG de precisión inspirada en *SF Symbols*.
+- **Arquitectura de Pestañas macOS (*Segmented Toolbar*):** Permite alternar instantáneamente entre el módulo de *Tamaño de Muestra* y el de *Desviación Estándar*, preservando el estado de los cálculos, la accesibilidad de teclado (`role="tab"`) y la reactividad del modo oscuro/claro.
+- **Motor Estadístico Dual (Población vs. Muestra):**
+  - **Desviación Estándar Muestral ($s$):** Aplica la corrección de Bessel dividiendo entre $n - 1$ para proporcionar un estimador insesgado de la varianza poblacional.
+  - **Desviación Estándar Poblacional ($\sigma$):** Cálculo directo dividiendo entre $N$ cuando se dispone del censo total de los datos.
+  - **Métricas complementarias:** Varianza muestral y poblacional ($s^2, \sigma^2$), suma de cuadrados de desviaciones ($SS$), error estándar de la media ($SE = s / \sqrt{n}$), coeficiente de variación ($CV$) y rango muestral.
+  - **Análisis de Bessel explícito:** Cuantificación del factor $\sqrt{n / (n - 1)}$ y del incremento porcentual de variabilidad asignable al sesgo muestral.
+- **Gráficos Interactivos en HTML5 Canvas (0 dependencias):**
+  - **Campana de Gauss (Distribución Normal):** Curva de densidad paramétrica centrada en la media con áreas sombreadas para las zonas empíricas ($\pm 1\sigma = 68.3\%$, $\pm 2\sigma = 95.4\%$, $\pm 3\sigma = 99.7\%$), selector para comparar curvas y proyección de los datos observados en la base (*strip plot*).
+  - **Diagrama de Dispersión & Bandas:** Representa cada observación individual, su conector residual a la media y las bandas de tolerancia $\pm 1s$ y $\pm 1\sigma$.
+  - **Soporte HiDPI / Retina:** Escalado automático mediante `window.devicePixelRatio` para garantizar trazos nítidos en monitores 4K/5K y pantallas móviles.
+  - **Tema dinámico:** Los colores de ejes, rejillas, etiquetas y curvas se recalculan en tiempo real al cambiar entre modo oscuro y claro.
+- **Parser Flexible de Entrada:** Procesa series numéricas separadas por comas, espacios, tabulaciones o saltos de línea (ideal para pegar columnas de Excel, CSV o Google Sheets).
+- **Desglose Algebraico Paso a Paso:** Tabla detallada con las diferencias individuales $(x_i - \bar{x})$ y sus cuadrados $(x_i - \bar{x})^2$, junto con la fila de sumatorias.
+- **Presets de Prueba Rápida:** Carga de series de ejemplo con un clic (Calificaciones, Tiempos de respuesta, Pesos en gramos).
 
 ---
 
 ## 2. Fundamentación Matemática
 
-### Fórmula de Población Finita
+### 2.1 Tamaño de Muestra para Población Finita (Proporciones)
 
-Para una población de tamaño conocido $N$, la fórmula de muestreo probabilístico simple para estimación de proporciones es:
+Para una población conocida $N$, la fórmula de muestreo probabilístico simple para estimación de proporciones es:
 
 $$n = \frac{N \cdot Z^2 \cdot p(1-p)}{e^2(N-1) + Z^2 \cdot p(1-p)}$$
 
-El resultado final se redondea hacia arriba mediante la función techo ($\lceil n \rceil$), ya que cualquier fracción decimal exige una unidad muestral completa adicional para garantizar el margen de error y el nivel de confianza establecidos:
+Con redondeo estricto hacia arriba (función techo):
 
 $$n_{\text{final}} = \min\left(\lceil n \rceil, N\right)$$
 
-### Parámetros
+### 2.2 Desviación Estándar Poblacional vs. Muestral
 
-| Parámetro | Símbolo | Rango / Valores | Descripción |
-|---|---|---|---|
-| Población | $N$ | Entero $\ge 1$ | Universo total de elementos bajo estudio. |
-| Coeficiente de confianza | $Z$ | 1.645 (90%), 1.960 (95%), 2.576 (99%) | Valor crítico de la distribución normal estandarizada. |
-| Margen de error | $e$ | 0.01 a 0.10 (1% a 10%) | Diferencia máxima admisible entre el estimador y el parámetro real. |
-| Proporción esperada | $p$ | 0.01 a 0.99 (50% por defecto) | Probabilidad a priori del evento. $p = 0.50$ maximiza la varianza $p(1-p) = 0.25$, siendo el criterio más conservador. |
+Dado un conjunto de datos $\{x_1, x_2, \dots, x_n\}$ con media aritmética $\bar{x} = \mu = \frac{1}{n}\sum_{i=1}^n x_i$:
 
-### Caso de Validación de Referencia
+#### Desviación Estándar Poblacional ($\sigma$)
+Aplica cuando los datos representan la totalidad del universo delimitado:
 
-Parámetros:
-- $N = 2{,}800$
-- $e = 5\% = 0.05$
-- Confianza = $95\% \implies Z = 1.96$
-- $p = 50\% = 0.50$
+$$\sigma = \sqrt{\frac{\sum_{i=1}^N (x_i - \mu)^2}{N}}$$
 
-Cálculo:
-1. Numerador: $2800 \cdot (1.96)^2 \cdot (0.5)(0.5) = 2800 \cdot 3.8416 \cdot 0.25 = 2689.12$
-2. Denominador: $(0.05)^2 \cdot (2799) + 3.8416 \cdot 0.25 = 6.9975 + 0.9604 = 7.9579$
-3. Cociente: $2689.12 / 7.9579 \approx 337.9183$
-4. Redondeo: $\lceil 337.9183 \rceil = \mathbf{338\text{ personas}}$
+#### Desviación Estándar Muestral ($s$)
+Aplica cuando los datos provienen de una muestra y se busca inferir el comportamiento de la población. La división entre $n - 1$ (**corrección de Bessel**) corrige la tendencia natural a subestimar la varianza debida a que los datos están sistemáticamente más cerca de la media muestral $\bar{x}$ que de la media poblacional real $\mu$:
+
+$$s = \sqrt{\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n - 1}}$$
+
+#### Relación y Factor de Bessel
+
+$$s = \sigma \cdot \sqrt{\frac{n}{n - 1}}$$
+
+A medida que $n$ aumenta, $\sqrt{n / (n - 1)} \to 1$, reduciendo la brecha entre el estimador muestral y el poblacional.
 
 ---
 
@@ -60,27 +65,26 @@ Cálculo:
 
 ```
 Calculadora muestral/
-  index.html      # Estructura semántica con interfaz estilo macOS/iOS
-  styles.css      # Sistema de diseño Apple (Vibrancy, dark mode, SF Pro stack)
-  script.js       # Lógica matemática, segmented control, switch iOS, historial y portapapeles
-  README.md       # Documentación técnica del proyecto
+├── index.html      # Estructura semántica, tabs macOS y módulos de cálculo
+├── styles.css      # Sistema de diseño Apple (Vibrancy, dark mode, canvas responsive)
+├── script.js       # Motores matemáticos, parser de series, gráficos canvas y portapapeles
+└── README.md       # Documentación técnica del proyecto
 ```
 
-Sin dependencias externas, frameworks ni librerías pesadas (100% vanilla HTML5, CSS3 y JavaScript moderno).
+**Filosofía:** Cero dependencias externas o paquetes npm (100% vanilla HTML5, CSS3 moderno y JavaScript ES6+).
 
 ---
 
 ## 4. Historial de Versiones y Ramas Git
 
-- **`main`:** Versión actual **V0.3** con interfaz estilo Apple (macOS y iOS).
-- **`v0.2-respaldo` / `v0.2`:** Rama con la versión **V0.2** (interfaz sobria académica).
+- **`main`:** Versión actual **V0.4** con módulo de desviación estándar, gráficos interactivos en Canvas y navegación modular.
+- **`v0.3-respaldo` / `v0.3`:** Rama con la versión **V0.3** (rediseño completo estilo Apple macOS/iOS).
+- **`v0.2-respaldo` / `v0.2`:** Rama con la versión **V0.2** (interfaz académica sobria).
 - **`v0.1-respaldo`:** Rama con la versión inicial **V0.1**.
 
 ---
 
 ## 5. Uso Local
-
-Para abrir el proyecto localmente:
 
 1. Clona el repositorio:
    ```bash
@@ -90,25 +94,20 @@ Para abrir el proyecto localmente:
    ```bash
    cd "Calculadora muestral"
    ```
-3. Abre `index.html` en tu navegador web, o inicia un servidor local:
+3. Abre `index.html` en el navegador, o levanta un servidor estático:
    ```bash
    python3 -m http.server 8000
    ```
-   Luego visita `http://localhost:8000`.
+   Abre [http://localhost:8000](http://localhost:8000).
 
 ---
 
-## 6. Publicación en GitHub Pages
+## 6. Despliegue en GitHub Pages
 
-Para actualizar o publicar el sitio en GitHub Pages:
+Los despliegues en GitHub Pages se sincronizan automáticamente desde la rama `main`:
 
-1. Agrega y sube los cambios a la rama principal:
-   ```bash
-   git add .
-   git commit -m "V0.3"
-   git push origin main
-   ```
-2. En GitHub, entra a **Settings** > **Pages**.
-3. En **Build and deployment** > **Branch**, selecciona `main` y `/ (root)`.
-4. El sitio estará disponible en:
-   `https://ch4r-j0sh-sv.github.io/Calculadora_muestral/`
+```bash
+git add .
+git commit -m "V0.4: Módulo de desviación estándar poblacional y muestral con gráficos interactivos"
+git push origin main
+```

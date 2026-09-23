@@ -177,7 +177,7 @@ body {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 680px;
+  max-width: 780px;
   background-color: var(--macos-window-bg);
   backdrop-filter: blur(40px) saturate(190%);
   -webkit-backdrop-filter: blur(40px) saturate(190%);
@@ -341,23 +341,101 @@ body {
 
 /* Sub-encabezado descriptivo (Toolbar) */
 .window-toolbar {
-  padding: 10px 22px;
+  padding: 12px 20px 10px;
   background-color: var(--macos-card-inset);
   border-bottom: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toolbar-nav-container {
+  display: flex;
+  width: 100%;
+}
+
+.macos-tabs-bar {
+  display: flex;
+  width: 100%;
+  background-color: var(--segmented-bg);
+  padding: 3px;
+  border-radius: 11px;
+  gap: 3px;
+}
+
+.macos-tab-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 7px 14px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--label-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  user-select: none;
+}
+
+.macos-tab-btn:hover {
+  color: var(--label-primary);
+}
+
+.macos-tab-btn.active {
+  background-color: var(--segmented-thumb);
+  color: var(--label-primary);
+  font-weight: 600;
+  box-shadow: var(--segmented-thumb-shadow);
+}
+
+.macos-tab-btn .tab-icon {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.2;
+}
+
+.macos-tab-btn.active .tab-icon {
+  color: var(--system-blue);
 }
 
 .toolbar-caption {
   font-size: 0.82rem;
   color: var(--label-secondary);
   line-height: 1.4;
+  transition: opacity 0.2s ease;
 }
 
 /* Contenedor Principal de la Ventana */
 .window-content {
   padding: 20px 22px 28px;
+}
+
+/* Paneles de Pestaña */
+.tab-panel {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  animation: tabFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-panel[hidden] {
+  display: none !important;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ==========================================================================
@@ -466,9 +544,82 @@ body {
   box-shadow: 0 0 0 3.5px var(--system-blue-glow);
 }
 
-.apple-input.input-invalid {
+.apple-input.input-invalid, .apple-textarea.input-invalid {
   border-color: var(--system-red);
   background-color: var(--system-red-tint);
+}
+
+.apple-textarea {
+  width: 100%;
+  font-family: var(--font-apple-mono);
+  font-size: 0.88rem;
+  color: var(--label-primary);
+  background-color: var(--system-quaternary-fill);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+.apple-textarea:hover {
+  background-color: var(--system-tertiary-fill);
+}
+
+.apple-textarea:focus {
+  border-color: var(--system-blue);
+  background-color: var(--system-background);
+  box-shadow: 0 0 0 3.5px var(--system-blue-glow);
+}
+
+/* Presets de Datos de Ejemplo */
+.presets-section {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.presets-label {
+  font-size: 0.78rem;
+  color: var(--label-tertiary);
+  font-weight: 500;
+}
+
+.presets-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preset-chip {
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 500;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background-color: var(--system-quaternary-fill);
+  color: var(--label-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.preset-chip:hover {
+  background-color: var(--system-tertiary-fill);
+  color: var(--label-primary);
+}
+
+.preset-chip.active {
+  background-color: var(--system-blue-tint);
+  border-color: rgba(0, 122, 255, 0.35);
+  color: var(--system-blue);
+  font-weight: 600;
 }
 
 .select-wrapper {
@@ -1175,6 +1326,367 @@ body {
 }
 
 /* ==========================================================================
+   Módulo de Desviación Estándar (V0.4)
+   ========================================================================== */
+
+/* Comparativa Dual de Desviación Estándar */
+.desv-dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+
+.desv-card-item {
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid var(--macos-card-border);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.desv-card-sample {
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.07) 0%, rgba(0, 122, 255, 0.02) 100%);
+  border-color: rgba(0, 122, 255, 0.20);
+}
+
+.desv-card-pop {
+  background: linear-gradient(135deg, rgba(88, 86, 214, 0.07) 0%, rgba(88, 86, 214, 0.02) 100%);
+  border-color: rgba(88, 86, 214, 0.20);
+}
+
+[data-theme="dark"] .desv-card-sample {
+  background: linear-gradient(135deg, rgba(10, 132, 255, 0.14) 0%, rgba(10, 132, 255, 0.04) 100%);
+  border-color: rgba(10, 132, 255, 0.28);
+}
+
+[data-theme="dark"] .desv-card-pop {
+  background: linear-gradient(135deg, rgba(94, 92, 230, 0.14) 0%, rgba(94, 92, 230, 0.04) 100%);
+  border-color: rgba(94, 92, 230, 0.28);
+}
+
+.desv-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.desv-badge-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: -0.01em;
+}
+
+.badge-sample {
+  background-color: var(--system-blue-tint);
+  color: var(--system-blue);
+}
+
+.badge-pop {
+  background-color: rgba(88, 86, 214, 0.14);
+  color: #5856d6;
+}
+
+[data-theme="dark"] .badge-pop {
+  color: #5e5ce6;
+}
+
+.desv-formula-hint {
+  font-size: 0.72rem;
+  color: var(--label-tertiary);
+  font-family: var(--font-apple-mono);
+}
+
+.desv-val-display {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.desv-symbol {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--label-secondary);
+}
+
+.desv-number {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--label-primary);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.desv-desc-text {
+  font-size: 0.78rem;
+  color: var(--label-secondary);
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+
+.desv-meta-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background-color: var(--macos-card-inset);
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.meta-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+}
+
+.meta-pill-label {
+  color: var(--label-secondary);
+}
+
+.meta-pill-val {
+  font-weight: 600;
+  color: var(--label-primary);
+  font-family: var(--font-apple-mono);
+  font-size: 0.78rem;
+}
+
+/* Tarjeta de Insight Bessel */
+.bessel-insight-card {
+  background-color: var(--system-quaternary-fill);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.bessel-insight-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  color: var(--system-orange);
+}
+
+.bessel-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.bessel-insight-header h4 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--label-primary);
+}
+
+.bessel-text {
+  font-size: 0.78rem;
+  color: var(--label-secondary);
+  line-height: 1.45;
+}
+
+.bessel-highlight {
+  font-weight: 700;
+  color: var(--system-orange);
+}
+
+.bessel-text code {
+  font-family: var(--font-apple-mono);
+  background-color: var(--system-secondary-fill);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.76rem;
+}
+
+/* Gráficos Canvas */
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chart-segmented {
+  margin: 0;
+}
+
+.chart-controls-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 12px;
+  background-color: var(--macos-card-inset);
+  border-radius: 10px;
+  margin: 10px 0;
+}
+
+.chart-mode-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-label {
+  font-size: 0.76rem;
+  color: var(--label-tertiary);
+  font-weight: 500;
+}
+
+.chart-pill-btn {
+  padding: 3px 10px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--label-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chart-pill-btn:hover {
+  background-color: var(--system-quaternary-fill);
+  color: var(--label-primary);
+}
+
+.chart-pill-btn.active {
+  background-color: var(--segmented-thumb);
+  color: var(--label-primary);
+  font-weight: 600;
+  box-shadow: var(--card-shadow);
+  border-color: var(--macos-card-border);
+}
+
+.chart-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--label-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.apple-checkbox {
+  accent-color: var(--system-blue);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.canvas-container {
+  width: 100%;
+  position: relative;
+  background-color: var(--macos-card-inset);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+}
+
+.stat-canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--hairline);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  color: var(--label-secondary);
+}
+
+.legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.swatch-mean {
+  background-color: #ff3b30;
+}
+
+.swatch-sample {
+  background-color: #007aff;
+}
+
+.swatch-pop {
+  background-color: #5856d6;
+}
+
+.swatch-sigma1 {
+  background-color: rgba(0, 122, 255, 0.25);
+  border: 1px dashed #007aff;
+}
+
+/* Tabla de Desviaciones */
+.desv-table-box {
+  margin-top: 16px;
+}
+
+.desv-table-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.desv-table-header h4 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--label-primary);
+}
+
+.desv-table-subtitle {
+  font-size: 0.74rem;
+  color: var(--label-tertiary);
+}
+
+#tabla-desviaciones th.th-index {
+  width: 44px;
+  text-align: center;
+}
+
+#tabla-desviaciones td:first-child {
+  text-align: center;
+  color: var(--label-tertiary);
+  font-family: var(--font-apple-mono);
+}
+
+#tabla-desviaciones tfoot tr {
+  font-weight: 600;
+  background-color: var(--system-secondary-fill);
+  border-top: 1.5px solid var(--separator);
+}
+
+/* ==========================================================================
    Responsive Adaptations (iOS / iPadOS)
    ========================================================================== */
 @media (max-width: 580px) {
@@ -1196,12 +1708,25 @@ body {
     gap: 10px;
   }
 
+  .desv-dual-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-controls-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .result-metrics-grid {
     grid-template-columns: 1fr;
   }
 
   .result-number {
     font-size: 2.5rem;
+  }
+
+  .desv-number {
+    font-size: 2rem;
   }
 
   .window-statusbar {

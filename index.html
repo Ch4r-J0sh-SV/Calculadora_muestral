@@ -31,8 +31,8 @@
           <path d="M3 3v18h18" />
           <path d="M18 9l-5 5-4-4-3 3" />
         </svg>
-        <span class="title-text">Calculadora de Muestra</span>
-        <span class="version-badge">v0.3</span>
+        <span class="title-text">Calculadora Estadística</span>
+        <span class="version-badge">v0.4</span>
       </div>
 
       <!-- Interruptor de Modo Oscuro estilo iOS -->
@@ -52,15 +52,39 @@
       </div>
     </header>
 
-    <!-- Sub-encabezado descriptivo -->
+    <!-- Sub-encabezado descriptivo y barra de módulos -->
     <div class="window-toolbar">
-      <p class="toolbar-caption">Estimación estadística de tamaño muestral para poblaciones finitas con desglose metodológico.</p>
+      <div class="toolbar-nav-container">
+        <nav class="macos-tabs-bar" role="tablist" aria-label="Módulos estadísticos">
+          <button type="button" class="macos-tab-btn active" role="tab" id="tab-btn-muestra" aria-selected="true" aria-controls="view-muestra" data-tab="muestra">
+            <svg class="sf-icon tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>Tamaño de Muestra</span>
+          </button>
+          <button type="button" class="macos-tab-btn" role="tab" id="tab-btn-desviacion" aria-selected="false" aria-controls="view-desviacion" data-tab="desviacion">
+            <svg class="sf-icon tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            <span>Desviación Estándar</span>
+          </button>
+        </nav>
+      </div>
+      <p class="toolbar-caption" id="toolbar-caption">Estimación estadística de tamaño muestral para poblaciones finitas con desglose metodológico.</p>
     </div>
 
     <!-- Contenido de la ventana -->
     <main class="window-content">
       
-      <!-- Panel de Entrada de Parámetros -->
+      <!-- ================================================================= -->
+      <!-- Vista 1: Tamaño de Muestra (Poblaciones Finitas)                   -->
+      <!-- ================================================================= -->
+      <div class="tab-panel active" id="view-muestra" role="tabpanel" aria-labelledby="tab-btn-muestra">
+        
+        <!-- Panel de Entrada de Parámetros -->
       <section class="apple-card form-card">
         <div class="card-header">
           <div class="card-title-group">
@@ -389,6 +413,363 @@
           <!-- Generado dinámicamente por script.js -->
         </div>
       </section>
+      </div> <!-- Fin de view-muestra -->
+
+      <!-- ================================================================= -->
+      <!-- Vista 2: Desviación Estándar Poblacional y Muestral                -->
+      <!-- ================================================================= -->
+      <div class="tab-panel" id="view-desviacion" role="tabpanel" aria-labelledby="tab-btn-desviacion" hidden>
+
+        <!-- Panel de Entrada de Datos -->
+        <section class="apple-card form-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <svg class="sf-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+              <h2>Serie de Datos Numéricos</h2>
+            </div>
+            <span class="card-sublabel" id="desv-conteo-badge">10 valores detectados</span>
+          </div>
+
+          <!-- Presets de Datos de Ejemplo -->
+          <div class="presets-section">
+            <span class="presets-label">Cargar conjunto de prueba:</span>
+            <div class="presets-chips" role="group" aria-label="Conjuntos de datos predefinidos">
+              <button type="button" class="preset-chip active" data-preset="calificaciones">
+                <span>Calificaciones (n=10)</span>
+              </button>
+              <button type="button" class="preset-chip" data-preset="tiempos">
+                <span>Tiempos ms (n=12)</span>
+              </button>
+              <button type="button" class="preset-chip" data-preset="produccion">
+                <span>Pesos en g (n=15)</span>
+              </button>
+            </div>
+          </div>
+
+          <form id="form-desviacion" novalidate>
+            <div class="form-group full-width-group">
+              <label for="desv-input-datos" class="field-label">
+                Valores de la serie <span class="param-symbol">(x₁, x₂, ..., xₙ)</span>
+              </label>
+              <div class="textarea-wrapper">
+                <textarea 
+                  id="desv-input-datos" 
+                  name="desv-datos" 
+                  rows="3" 
+                  class="apple-textarea" 
+                  placeholder="Pega o escribe números separados por comas, espacios o saltos de línea (ej. 12, 14.5, 18, 22, 25, 29, 31, 35, 40)..." 
+                  required 
+                  aria-describedby="desv-datos-error"
+                >12, 15, 18, 20, 22, 25, 28, 30, 34, 36</textarea>
+              </div>
+              <span id="desv-datos-error" class="error-message" role="alert"></span>
+            </div>
+
+            <!-- Acciones del formulario de Desviación -->
+            <div class="form-actions">
+              <button type="submit" id="btn-calcular-desv" class="apple-btn btn-primary">
+                <svg class="sf-icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                <span>Calcular dispersión</span>
+              </button>
+              <button type="button" id="btn-reset-desv" class="apple-btn btn-secondary" title="Limpiar serie de datos">
+                <svg class="sf-icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                  <path d="M3 3v5h5"/>
+                </svg>
+                <span>Limpiar</span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Panel de Resultados de Desviación Estándar -->
+        <section id="desv-resultado" class="apple-card result-card desv-result-card" aria-live="polite">
+          <div class="result-header">
+            <div class="result-status-indicator">
+              <span class="status-dot status-dot-desv" aria-hidden="true"></span>
+              <span class="status-text">Resultados de Dispersión</span>
+            </div>
+            <button type="button" id="btn-copiar-desv" class="apple-btn btn-action-sm" title="Copiar reporte de dispersión">
+              <svg class="sf-icon btn-sm-icon" id="copy-icon-desv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span id="copy-btn-text-desv">Copiar</span>
+            </button>
+          </div>
+
+          <!-- Comparativa Dual: Muestral vs Poblacional -->
+          <div class="desv-dual-grid">
+            <!-- Tarjeta Desviación Muestral -->
+            <div class="desv-card-item desv-card-sample">
+              <div class="desv-card-top">
+                <div class="desv-badge-pill badge-sample">Muestra (Insesgada)</div>
+                <span class="desv-formula-hint">Divisor: n - 1</span>
+              </div>
+              <div class="desv-val-display">
+                <span class="desv-symbol">s =</span>
+                <span id="desv-s-val" class="desv-number">8.0139</span>
+              </div>
+              <p class="desv-desc-text">Desviación estándar calculada con la corrección de Bessel para muestras representativas.</p>
+              <div class="desv-meta-pills">
+                <div class="meta-pill">
+                  <span class="meta-pill-label">Varianza (s²)</span>
+                  <span id="desv-s2-val" class="meta-pill-val">64.2222</span>
+                </div>
+                <div class="meta-pill">
+                  <span class="meta-pill-label">Grados libertad (gl)</span>
+                  <span id="desv-gl-val" class="meta-pill-val">9</span>
+                </div>
+                <div class="meta-pill">
+                  <span class="meta-pill-label">Coef. Variación (CV)</span>
+                  <span id="desv-cv-s-val" class="meta-pill-val">33.39%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tarjeta Desviación Poblacional -->
+            <div class="desv-card-item desv-card-pop">
+              <div class="desv-card-top">
+                <div class="desv-badge-pill badge-pop">Población (Completa)</div>
+                <span class="desv-formula-hint">Divisor: N</span>
+              </div>
+              <div class="desv-val-display">
+                <span class="desv-symbol">σ =</span>
+                <span id="desv-sigma-val" class="desv-number">7.6026</span>
+              </div>
+              <p class="desv-desc-text">Desviación estándar cuando los datos abarcan el 100% de la población delimitada.</p>
+              <div class="desv-meta-pills">
+                <div class="meta-pill">
+                  <span class="meta-pill-label">Varianza (σ²)</span>
+                  <span id="desv-sigma2-val" class="meta-pill-val">57.8000</span>
+                </div>
+                <div class="meta-pill">
+                  <span class="meta-pill-label">Población total (N)</span>
+                  <span id="desv-n-val" class="meta-pill-val">10</span>
+                </div>
+                <div class="meta-pill">
+                  <span class="meta-pill-label">Coef. Variación (CV)</span>
+                  <span id="desv-cv-sigma-val" class="meta-pill-val">31.68%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Banner de Análisis Comparativo (Bessel) -->
+          <div class="bessel-insight-card">
+            <div class="bessel-insight-header">
+              <svg class="sf-icon bessel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <h4>Factor de Corrección de Bessel</h4>
+            </div>
+            <p id="bessel-explanation" class="bessel-text">
+              La desviación muestral <strong>s</strong> es un <span id="bessel-pct-diff" class="bessel-highlight">+5.41%</span> mayor que <strong>σ</strong> debido al factor de corrección <code id="bessel-factor-val">√(10/9) ≈ 1.0541</code>. Esto compensa la tendencia matemática a subestimar la varianza cuando se utiliza la media muestral.
+            </p>
+          </div>
+
+          <!-- Métricas Resumen estilo Apple Inset -->
+          <div class="result-metrics-grid">
+            <div class="metric-card">
+              <span class="metric-label">Media aritmética (x̄ = μ)</span>
+              <span id="desv-media-val" class="metric-value">24.0000</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Suma de cuadrados (SS)</span>
+              <span id="desv-ss-val" class="metric-value">578.0000</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Error estándar (SE = s/√n)</span>
+              <span id="desv-se-val" class="metric-value">2.5342</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Rango muestral (Max - Min)</span>
+              <span id="desv-rango-val" class="metric-value">24.0 (12 a 36)</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Panel de Visualización Gráfica Interactiva -->
+        <section class="apple-card chart-card">
+          <div class="card-header chart-card-header">
+            <div class="card-title-group">
+              <svg class="sf-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 3v18h18" />
+                <path d="M18 9l-5 5-4-4-3 3" />
+              </svg>
+              <h3>Visualización Gráfica de la Dispersión</h3>
+            </div>
+
+            <!-- Selector de Vista Gráfica -->
+            <div class="segmented-control chart-segmented" id="segmented-grafico" role="radiogroup" aria-label="Tipo de gráfico estadístico">
+              <button type="button" class="segment-btn active" data-chart="gauss" role="radio" aria-checked="true">
+                <span>Campana de Gauss</span>
+              </button>
+              <button type="button" class="segment-btn" data-chart="dispersion" role="radio" aria-checked="false">
+                <span>Dispersión & Bandas</span>
+              </button>
+            </div>
+          </div>
+
+          <p class="table-description" id="chart-caption">
+            Distribución normal teórica N(μ, σ) centrada en la media con las zonas empíricas de desviación (±1σ, ±2σ y ±3σ) y proyección de datos observados.
+          </p>
+
+          <!-- Filtros / Controles de la Gráfica -->
+          <div class="chart-controls-toolbar">
+            <div class="chart-mode-pills" role="radiogroup" aria-label="Curva a resaltar">
+              <span class="toolbar-label">Curva:</span>
+              <button type="button" class="chart-pill-btn active" data-curve="both">Comparar ambas</button>
+              <button type="button" class="chart-pill-btn" data-curve="sample">Muestral (s)</button>
+              <button type="button" class="chart-pill-btn" data-curve="pop">Poblacional (σ)</button>
+            </div>
+            <div class="chart-toggle-group">
+              <label class="chart-checkbox-label">
+                <input type="checkbox" id="chk-show-points" checked class="apple-checkbox">
+                <span>Mostrar puntos observados</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Lienzo Canvas con Escalado HiDPI -->
+          <div class="canvas-container">
+            <canvas id="canvas-desviacion" width="760" height="340" class="stat-canvas" aria-label="Gráfico de dispersión y distribución normal"></canvas>
+          </div>
+
+          <!-- Leyenda de colores del gráfico -->
+          <div class="chart-legend" id="chart-legend-container">
+            <div class="legend-item">
+              <span class="legend-swatch swatch-mean"></span>
+              <span class="legend-text">Media (<span id="leg-mean-symbol">x̄ = μ</span>: <strong id="leg-mean">24.00</strong>)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch swatch-sample"></span>
+              <span class="legend-text">Muestral (s = <strong id="leg-s">8.18</strong>)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch swatch-pop"></span>
+              <span class="legend-text">Poblacional (σ = <strong id="leg-sigma">7.76</strong>)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch swatch-sigma1"></span>
+              <span class="legend-text">Banda ±1 Desv. (68.3%)</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Desglose Matemático Paso a Paso -->
+        <section class="apple-card details-card">
+          <details id="desv-desglose-details" open class="apple-disclosure">
+            <summary class="disclosure-header">
+              <div class="disclosure-title-group">
+                <svg class="sf-icon disclosure-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+                <h3>Desglose matemático y tabla de cálculo</h3>
+              </div>
+              <span class="disclosure-badge">Álgebra</span>
+            </summary>
+
+            <div class="disclosure-content">
+              <p class="formula-label">Fórmulas fundamentales de cálculo:</p>
+              <div class="apple-code-box">
+                <code>μ = [ Σ xᵢ ] / N  |  σ = √[ Σ(xᵢ - μ)² / N ]  |  s = √[ Σ(xᵢ - x̄)² / (n - 1) ]</code>
+              </div>
+
+              <div id="desv-steps-container" class="steps-grid">
+                <!-- Rellenado dinámicamente por script.js -->
+              </div>
+
+              <!-- Tabla de Desviaciones Individuales -->
+              <div class="desv-table-box">
+                <div class="desv-table-header">
+                  <h4>Tabla de diferencias respecto a la media</h4>
+                  <span class="desv-table-subtitle" id="desv-table-subtitle">10 observaciones</span>
+                </div>
+                <div class="apple-table-wrapper">
+                  <table class="apple-table" id="tabla-desviaciones">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="th-index">i</th>
+                        <th scope="col">Valor (xᵢ)</th>
+                        <th scope="col">Diferencia (xᵢ - x̄)</th>
+                        <th scope="col">Cuadrado (xᵢ - x̄)²</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tabla-desviaciones-body">
+                      <!-- Filas generadas por script.js -->
+                    </tbody>
+                    <tfoot id="tabla-desviaciones-foot">
+                      <!-- Totales generados por script.js -->
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- Fundamentación Teórica de la Desviación Estándar -->
+        <section class="apple-card details-card">
+          <details id="desv-teoria-details" class="apple-disclosure">
+            <summary class="disclosure-header">
+              <div class="disclosure-title-group">
+                <svg class="sf-icon disclosure-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+                <h3>Fundamentación estadística: ¿Muestral o Poblacional?</h3>
+              </div>
+              <span class="disclosure-badge">Conceptos</span>
+            </summary>
+
+            <div class="disclosure-content theory-content">
+              <div class="theory-item">
+                <div class="theory-item-header">
+                  <span class="theory-item-badge">1</span>
+                  <h4>Corrección de Bessel (¿Por qué n - 1?)</h4>
+                </div>
+                <p>Al calcular la dispersión a partir de una muestra, se emplea la media muestral x̄ en lugar de la media poblacional real μ. Dado que los datos están por definición más cerca de su propia media que de la verdadera media poblacional, el uso de n en el denominador genera una subestimación sistemática. Dividir entre (n - 1) elimina este sesgo, produciendo un estimador insesgado de la varianza poblacional.</p>
+              </div>
+
+              <div class="theory-item">
+                <div class="theory-item-header">
+                  <span class="theory-item-badge">2</span>
+                  <h4>¿Cuándo emplear la desviación poblacional (σ)?</h4>
+                </div>
+                <p>Únicamente cuando se ha censado o medido el 100% de los elementos del universo delimitado (ej. las notas de todos los alumnos de un aula específica, sin pretensión de generalizar a otras aulas o ciclos).</p>
+              </div>
+
+              <div class="theory-item">
+                <div class="theory-item-header">
+                  <span class="theory-item-badge">3</span>
+                  <h4>¿Cuándo emplear la desviación muestral (s)?</h4>
+                </div>
+                <p>Siempre que los datos provengan de un experimento, sondeo o muestra aleatoria de la cual se desea inferir el comportamiento de una población general. Es la fórmula estándar en inferencia y pruebas de hipótesis.</p>
+              </div>
+
+              <div class="theory-item">
+                <div class="theory-item-header">
+                  <span class="theory-item-badge">4</span>
+                  <h4>Regla Empírica (68% - 95% - 99.7%)</h4>
+                </div>
+                <p>En distribuciones normales o con simetría de campana: aproximadamente el 68.27% de las observaciones se ubica dentro de ±1 desviación estándar de la media, el 95.45% dentro de ±2 desviaciones y el 99.73% dentro de ±3 desviaciones estándar.</p>
+              </div>
+            </div>
+          </details>
+        </section>
+
+      </div> <!-- Fin de view-desviacion -->
 
     </main>
 
@@ -396,10 +777,10 @@
     <footer class="window-statusbar">
       <div class="statusbar-item">
         <span class="status-indicator-mini"></span>
-        <span>Modo: Población Finita</span>
+        <span id="statusbar-modo">Modo: Población Finita</span>
       </div>
       <div class="statusbar-item">
-        <span>Fórmula de Proporciones</span>
+        <span id="statusbar-tipo">Fórmula de Proporciones</span>
       </div>
       <div class="statusbar-item">
         <span>Estadística Inferencial</span>
