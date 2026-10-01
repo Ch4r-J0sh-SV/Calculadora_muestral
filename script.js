@@ -1,7 +1,8 @@
 /**
- * Calculadora Estadística — macOS & iOS Edition — V0.4
+ * Calculadora Estadística — macOS & iOS Edition — V0.5
  * Módulo 1: Tamaño de Muestra para Poblaciones Finitas
  * Módulo 2: Desviación Estándar Poblacional y Muestral con Gráficos Interactivos
+ * Módulo 3: Herramienta de Interpolación Lineal para Tablas Estadísticas
  * Cero dependencias externas, gráficos Canvas nativos Retina y rigor inferencial.
  */
 
@@ -13,13 +14,15 @@
   // ==========================================================================
   const tabBtnMuestra = document.getElementById('tab-btn-muestra');
   const tabBtnDesviacion = document.getElementById('tab-btn-desviacion');
+  const tabBtnInterpolacion = document.getElementById('tab-btn-interpolacion');
   const viewMuestra = document.getElementById('view-muestra');
   const viewDesviacion = document.getElementById('view-desviacion');
+  const viewInterpolacion = document.getElementById('view-interpolacion');
   const toolbarCaption = document.getElementById('toolbar-caption');
   const statusbarModo = document.getElementById('statusbar-modo');
   const statusbarTipo = document.getElementById('statusbar-tipo');
 
-  let moduloActivo = 'muestra'; // 'muestra' | 'desviacion'
+  let moduloActivo = 'muestra'; // 'muestra' | 'desviacion' | 'interpolacion'
 
   // ==========================================================================
   // Módulo 1: Tamaño de Muestra (Elementos DOM)
@@ -83,7 +86,7 @@
   const resSeVal = document.getElementById('desv-se-val');
   const resRangoVal = document.getElementById('desv-rango-val');
 
-  // Gráficos Canvas
+  // Gráficos Canvas Desviación
   const segmentedGrafico = document.getElementById('segmented-grafico');
   const chartSegmentBtns = segmentedGrafico ? segmentedGrafico.querySelectorAll('.segment-btn') : [];
   const chartCaption = document.getElementById('chart-caption');
@@ -102,6 +105,68 @@
   const tablaDesvFoot = document.getElementById('tabla-desviaciones-foot');
   const desvTableSubtitle = document.getElementById('desv-table-subtitle');
 
+  // ==========================================================================
+  // Módulo 3: Interpolación Lineal (Elementos DOM)
+  // ==========================================================================
+  const formInterp = document.getElementById('form-interpolacion');
+  const inputX1 = document.getElementById('interp-x1');
+  const inputY1 = document.getElementById('interp-y1');
+  const inputX2 = document.getElementById('interp-x2');
+  const inputY2 = document.getElementById('interp-y2');
+  const inputYTarget = document.getElementById('interp-y-target');
+
+  const errorX1 = document.getElementById('interp-x1-error');
+  const errorY1 = document.getElementById('interp-y1-error');
+  const errorX2 = document.getElementById('interp-x2-error');
+  const errorY2 = document.getElementById('interp-y2-error');
+  const errorYTarget = document.getElementById('interp-y-target-error');
+
+  const interpAlertaGlobal = document.getElementById('interp-alerta-global');
+  const interpAlertaTexto = document.getElementById('interp-alerta-texto');
+
+  const btnResetInterp = document.getElementById('btn-reset-interp');
+  const btnInvertirInterp = document.getElementById('btn-invertir-interp');
+  const btnCopiarInterp = document.getElementById('btn-copiar-interp');
+  const copyBtnTextInterp = document.getElementById('copy-btn-text-interp');
+  const copyIconInterp = document.getElementById('copy-icon-interp');
+  const btnCopiarProcInterp = document.getElementById('btn-copiar-procedimiento-interp');
+  const btnLimpiarHistorialInterp = document.getElementById('btn-limpiar-historial-interp');
+
+  const interpPresetChips = document.querySelectorAll('[data-interp-preset]');
+  const segmentedRounding = document.getElementById('segmented-interp-rounding');
+  const roundingBtns = segmentedRounding ? segmentedRounding.querySelectorAll('.segment-btn') : [];
+
+  const resInterpX = document.getElementById('interp-resultado-x');
+  const resInterpDetalle = document.getElementById('interp-resultado-detalle');
+  const metaDiffX = document.getElementById('interp-meta-diff-x');
+  const metaDiffY = document.getElementById('interp-meta-diff-y');
+  const metaDiffYTarget = document.getElementById('interp-meta-diff-ytarget');
+  const metaAvance = document.getElementById('interp-meta-avance');
+  const metaPendiente = document.getElementById('interp-meta-pendiente');
+  const metaExactoInterp = document.getElementById('interp-meta-exacto');
+
+  const interpProcedimientoTexto = document.getElementById('interp-procedimiento-texto');
+  const interpStepsContainer = document.getElementById('interp-steps-container');
+  const canvasInterp = document.getElementById('canvas-interpolacion');
+
+  const legP1 = document.getElementById('leg-p1');
+  const legTarget = document.getElementById('leg-target');
+  const legP2 = document.getElementById('leg-p2');
+  const interpHistorialLista = document.getElementById('interp-historial-lista');
+
+  let ultimoCalculoInterp = null;
+  let decimalesInterp = 4; // 4 | 3 | 2 | 'exact'
+
+  const STORAGE_INTERP_HISTORY_KEY = 'calc_interp_historial';
+
+  // Casos de prueba / Presets para Interpolación
+  const INTERP_PRESETS = {
+    't-student': { x1: 1.7613, y1: 0.05, x2: 2.1448, y2: 0.025, yTarget: 0.035, label: 't-Student (gl=14)' },
+    'normal-z': { x1: 1.97, y1: 0.9756, x2: 1.98, y2: 0.9761, yTarget: 0.9760, label: 'Normal Z (área=0.9760)' },
+    'chi-cuadrado': { x1: 18.307, y1: 0.05, x2: 20.483, y2: 0.025, yTarget: 0.03, label: 'Chi-Cuadrado (gl=10)' },
+    'lineal-simple': { x1: 10, y1: 20, x2: 20, y2: 40, yTarget: 25, label: 'Ejemplo Base (10 a 20)' }
+  };
+
   // Elementos Globales (Tema & Notificaciones)
   const btnTheme = document.getElementById('theme-toggle');
   const toast = document.getElementById('toast');
@@ -112,7 +177,7 @@
   let toastTimer = null;
   let resizeTimer = null;
 
-  // Estado del gráfico
+  // Estado del gráfico de Desviación
   let tipoGrafico = 'gauss'; // 'gauss' | 'dispersion'
   let curvaResaltada = 'both'; // 'both' | 'sample' | 'pop'
   let mostrarPuntosObs = true;
@@ -120,7 +185,7 @@
   const STORAGE_THEME_KEY = 'calc_muestra_theme';
   const STORAGE_HISTORY_KEY = 'calc_muestra_historial';
 
-  // Conjuntos de datos predefinidos
+  // Conjuntos de datos predefinidos (Desviación)
   const PRESETS = {
     calificaciones: [12, 14, 15, 15, 16, 17, 18, 18, 19, 20],
     tiempos: [120, 135, 140, 142, 145, 148, 150, 155, 160, 162, 170, 185],
@@ -133,27 +198,28 @@
   function cambiarModulo(modulo) {
     moduloActivo = modulo;
 
+    const tabs = [
+      { id: 'muestra', btn: tabBtnMuestra, view: viewMuestra },
+      { id: 'desviacion', btn: tabBtnDesviacion, view: viewDesviacion },
+      { id: 'interpolacion', btn: tabBtnInterpolacion, view: viewInterpolacion }
+    ];
+
+    tabs.forEach(t => {
+      const activo = t.id === modulo;
+      if (t.btn) {
+        t.btn.classList.toggle('active', activo);
+        t.btn.setAttribute('aria-selected', activo ? 'true' : 'false');
+      }
+      if (t.view) {
+        t.view.hidden = !activo;
+      }
+    });
+
     if (modulo === 'muestra') {
-      tabBtnMuestra.classList.add('active');
-      tabBtnMuestra.setAttribute('aria-selected', 'true');
-      tabBtnDesviacion.classList.remove('active');
-      tabBtnDesviacion.setAttribute('aria-selected', 'false');
-
-      viewMuestra.hidden = false;
-      viewDesviacion.hidden = true;
-
       toolbarCaption.textContent = 'Estimación estadística de tamaño muestral para poblaciones finitas con desglose metodológico.';
       if (statusbarModo) statusbarModo.textContent = 'Modo: Población Finita';
       if (statusbarTipo) statusbarTipo.textContent = 'Fórmula de Proporciones';
-    } else {
-      tabBtnDesviacion.classList.add('active');
-      tabBtnDesviacion.setAttribute('aria-selected', 'true');
-      tabBtnMuestra.classList.remove('active');
-      tabBtnMuestra.setAttribute('aria-selected', 'false');
-
-      viewDesviacion.hidden = false;
-      viewMuestra.hidden = true;
-
+    } else if (modulo === 'desviacion') {
       toolbarCaption.textContent = 'Cálculo y comparación de dispersión poblacional (σ) y muestral (s) con visualización gráfica interactiva.';
       if (statusbarModo) statusbarModo.textContent = 'Modo: Dispersión y Desviación';
       if (statusbarTipo) statusbarTipo.textContent = 'Muestral & Poblacional';
@@ -161,6 +227,15 @@
       // Redibujar gráfico tras hacerse visible
       requestAnimationFrame(() => {
         dibujarGraficoEstadistico();
+      });
+    } else if (modulo === 'interpolacion') {
+      toolbarCaption.textContent = 'Herramienta de interpolación lineal para tablas estadísticas con motor algorítmico y sustitución paso a paso.';
+      if (statusbarModo) statusbarModo.textContent = 'Modo: Interpolación Lineal';
+      if (statusbarTipo) statusbarTipo.textContent = 'Aproximación por Segmento';
+
+      // Redibujar gráfico de interpolación tras hacerse visible
+      requestAnimationFrame(() => {
+        dibujarGraficoInterpolacion();
       });
     }
   }
@@ -1027,6 +1102,9 @@
     if (ultimoCalculoDesv) {
       dibujarGraficoEstadistico();
     }
+    if (ultimoCalculoInterp) {
+      dibujarGraficoInterpolacion();
+    }
   }
 
   // ==========================================================================
@@ -1152,12 +1230,646 @@ Corrección de Bessel:
   }
 
   // ==========================================================================
+  // MÓDULO 3: LÓGICA DE INTERPOLACIÓN LINEAL
+  // ==========================================================================
+
+  // Algoritmo de Cálculo Paso a Paso (Motor Interno de 6 Operaciones)
+  function calcularInterpolacion(X1, Y1, X2, Y2, yTarget) {
+    // Operación A: Restar (X2 menos X1). Guardar como "Diferencia de X".
+    const diffX = X2 - X1;
+
+    // Operación B: Restar (Y2 menos Y1). Guardar como "Diferencia de Y".
+    const diffY = Y2 - Y1;
+
+    // Operación C: Restar (Valor Y a buscar menos Y1). Guardar como "Diferencia Objetivo".
+    const diffYTarget = yTarget - Y1;
+
+    // Operación D: Multiplicar la "Diferencia de X" por la "Diferencia Objetivo".
+    const prod = diffX * diffYTarget;
+
+    // Operación E: Dividir el resultado de la "Operación D" entre la "Diferencia de Y".
+    const cociente = prod / diffY;
+
+    // Operación F (Resultado Final): Sumar el "Valor X1" con el resultado de la "Operación E".
+    const resultadoFinalX = X1 + cociente;
+
+    const avancePct = diffY !== 0 ? (diffYTarget / diffY) * 100 : 0;
+    const pendiente = diffX !== 0 ? (diffY / diffX) : null;
+
+    return {
+      X1,
+      Y1,
+      X2,
+      Y2,
+      yTarget,
+      diffX,
+      diffY,
+      diffYTarget,
+      prod,
+      cociente,
+      resultadoFinalX,
+      avancePct,
+      pendiente
+    };
+  }
+
+  // Lógica de Validación (Reglas antes del cálculo)
+  function validarFormularioInterpolacion() {
+    let valido = true;
+    interpAlertaGlobal.style.display = 'none';
+
+    const campos = [
+      { el: inputX1, err: errorX1, nombre: 'Valor X1' },
+      { el: inputY1, err: errorY1, nombre: 'Valor Y1' },
+      { el: inputX2, err: errorX2, nombre: 'Valor X2' },
+      { el: inputY2, err: errorY2, nombre: 'Valor Y2' },
+      { el: inputYTarget, err: errorYTarget, nombre: 'Valor Y a buscar' }
+    ];
+
+    // Regla 1: Que los 5 campos no estén vacíos y contengan únicamente números.
+    campos.forEach(c => {
+      const valStr = c.el.value.trim();
+      if (valStr === '') {
+        c.err.textContent = `Por favor ingresa el ${c.nombre}.`;
+        c.el.classList.add('input-invalid');
+        valido = false;
+      } else {
+        const num = Number(valStr);
+        if (isNaN(num) || !isFinite(num)) {
+          c.err.textContent = `El ${c.nombre} debe ser un número válido.`;
+          c.el.classList.add('input-invalid');
+          valido = false;
+        } else {
+          c.err.textContent = '';
+          c.el.classList.remove('input-invalid');
+        }
+      }
+    });
+
+    if (!valido) {
+      interpAlertaTexto.textContent = 'Error: Los 5 campos deben estar llenos y contener únicamente números.';
+      interpAlertaGlobal.style.display = 'flex';
+      return false;
+    }
+
+    const y1Val = parseFloat(inputY1.value);
+    const y2Val = parseFloat(inputY2.value);
+
+    // Regla 2: Que el "Valor Y2" sea estrictamente diferente al "Valor Y1"
+    if (Math.abs(y2Val - y1Val) < 1e-12) {
+      const errorMsg = 'Error: Los valores de Y1 y Y2 no pueden ser iguales (evita división por cero)';
+      errorY2.textContent = errorMsg;
+      inputY2.classList.add('input-invalid');
+      interpAlertaTexto.textContent = errorMsg;
+      interpAlertaGlobal.style.display = 'flex';
+      mostrarToast('Error: Y1 y Y2 no pueden ser iguales');
+      return false;
+    }
+
+    return true;
+  }
+
+  // Formateador numérico dinámico
+  function formatearNum(val, dec, forzarDecimales = false) {
+    if (val === null || val === undefined || isNaN(val)) return '—';
+    if (dec === 'exact') {
+      return val.toString();
+    }
+    const d = typeof dec === 'number' ? dec : 4;
+    if (forzarDecimales) {
+      return val.toFixed(d);
+    }
+    return Number(val.toFixed(d)).toLocaleString('es', {
+      minimumFractionDigits: d,
+      maximumFractionDigits: d
+    });
+  }
+
+  // Presentación del Procedimiento de Reemplazo en Texto Plano
+  function generarProcedimientoTexto(res, dec) {
+    const decStr = dec === 'exact' ? 'Exacto (sin redondeo)' : `${dec} decimales`;
+    const xResultadoStr = formatearNum(res.resultadoFinalX, dec);
+
+    return [
+`======================================================================`,
+`HERRAMIENTA DE INTERPOLACIÓN LINEAL (V0.5 — macOS Edition)`,
+`======================================================================`,
+`1. PARÁMETROS INGRESADOS:`,
+`   - Valor X1 (Límite 1 variable objetivo) : ${res.X1}`,
+`   - Valor Y1 (Límite 1 valor conocido)    : ${res.Y1}`,
+`   - Valor X2 (Límite 2 variable objetivo) : ${res.X2}`,
+`   - Valor Y2 (Límite 2 valor conocido)    : ${res.Y2}`,
+`   - Valor Y a buscar (Punto conocido)     : ${res.yTarget}`,
+``,
+`2. FÓRMULA DE INTERPOLACIÓN LINEAL:`,
+`   X = X1 + [ (X2 - X1) · (Y_buscar - Y1) ] / (Y2 - Y1)`,
+``,
+`3. SUSTITUCIÓN Y MOTOR DE CÁLCULO PASO A PASO:`,
+`   Operación A: Restar (X2 - X1)         = ${res.X2} - ${res.X1} = ${res.diffX} (Diferencia de X)`,
+`   Operación B: Restar (Y2 - Y1)         = ${res.Y2} - ${res.Y1} = ${res.diffY} (Diferencia de Y)`,
+`   Operación C: Restar (Y - Y1)          = ${res.yTarget} - ${res.Y1} = ${res.diffYTarget} (Diferencia Objetivo)`,
+`   Operación D: Multiplicar (A · C)      = (${res.diffX}) · (${res.diffYTarget}) = ${res.prod}`,
+`   Operación E: Dividir (D / B)          = (${res.prod}) / (${res.diffY}) = ${res.cociente}`,
+`   Operación F: Sumar (X1 + E)           = ${res.X1} + (${res.cociente}) = ${res.resultadoFinalX}`,
+``,
+`4. RESULTADO FINAL DE X:`,
+`   X = ${xResultadoStr}  [Ajuste de precisión: ${decStr}]`,
+`   Valor exacto interno: ${res.resultadoFinalX}`,
+`   Proporción de avance en el intervalo: ${res.avancePct.toFixed(2)}%`,
+`======================================================================`
+    ].join('\n');
+  }
+
+  // Renderizar Desglose de Operaciones A a F
+  function renderizarDesgloseInterpolacion(res) {
+    interpStepsContainer.innerHTML = `
+      <div class="apple-step-card">
+        <div class="step-card-header">Operación A: Restar (X2 menos X1) — Diferencia de X</div>
+        <div class="step-card-math">
+          Diferencia de X = ${res.X2} - ${res.X1} = <strong>${res.diffX}</strong>
+        </div>
+      </div>
+
+      <div class="apple-step-card">
+        <div class="step-card-header">Operación B: Restar (Y2 menos Y1) — Diferencia de Y</div>
+        <div class="step-card-math">
+          Diferencia de Y = ${res.Y2} - ${res.Y1} = <strong>${res.diffY}</strong> (≠ 0, validación superada)
+        </div>
+      </div>
+
+      <div class="apple-step-card">
+        <div class="step-card-header">Operación C: Restar (Valor Y a buscar menos Y1) — Diferencia Objetivo</div>
+        <div class="step-card-math">
+          Diferencia Objetivo = ${res.yTarget} - ${res.Y1} = <strong>${res.diffYTarget}</strong>
+        </div>
+      </div>
+
+      <div class="apple-step-card">
+        <div class="step-card-header">Operación D: Multiplicar (Diferencia de X · Diferencia Objetivo)</div>
+        <div class="step-card-math">
+          Producto = (${res.diffX}) · (${res.diffYTarget}) = <strong>${res.prod}</strong>
+        </div>
+      </div>
+
+      <div class="apple-step-card">
+        <div class="step-card-header">Operación E: Dividir (Operación D entre Diferencia de Y)</div>
+        <div class="step-card-math">
+          Cociente = (${res.prod}) / (${res.diffY}) = <strong>${res.cociente.toFixed(6)}</strong>
+        </div>
+      </div>
+
+      <div class="apple-step-card">
+        <div class="step-card-header">Operación F (Resultado Final): Sumar (Valor X1 + Operación E)</div>
+        <div class="step-card-math">
+          Resultado de X = ${res.X1} + (${res.cociente.toFixed(6)}) = <strong>${formatearNum(res.resultadoFinalX, decimalesInterp)}</strong>
+        </div>
+      </div>
+    `;
+  }
+
+  // Gráfico Interactivo de Interpolación Lineal en Canvas
+  function dibujarGraficoInterpolacion() {
+    if (!canvasInterp || !ultimoCalculoInterp) return;
+
+    const ctx = canvasInterp.getContext('2d');
+    const container = canvasInterp.parentElement;
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.min(container.clientWidth || 760, 760);
+    const height = 320;
+
+    canvasInterp.width = width * dpr;
+    canvasInterp.height = height * dpr;
+    canvasInterp.style.width = `${width}px`;
+    canvasInterp.style.height = `${height}px`;
+
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+
+    const isDark = isDarkTheme();
+    const colors = {
+      grid: isDark ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.06)',
+      axis: isDark ? 'rgba(255, 255, 255, 0.22)' : 'rgba(0, 0, 0, 0.18)',
+      textMuted: isDark ? 'rgba(235, 235, 245, 0.50)' : 'rgba(60, 60, 67, 0.55)',
+      p1: isDark ? '#0a84ff' : '#007aff',
+      p2: isDark ? '#30d158' : '#34c759',
+      line: isDark ? '#0a84ff' : '#007aff',
+      target: isDark ? '#ff9f0a' : '#ff9500',
+      targetGlow: isDark ? 'rgba(255, 159, 10, 0.25)' : 'rgba(255, 149, 0, 0.20)',
+      dash: isDark ? 'rgba(255, 159, 10, 0.70)' : 'rgba(255, 149, 0, 0.75)',
+      pointBorder: isDark ? '#1c1c1e' : '#ffffff'
+    };
+
+    ctx.clearRect(0, 0, width, height);
+
+    const res = ultimoCalculoInterp;
+    const x1 = res.X1;
+    const y1 = res.Y1;
+    const x2 = res.X2;
+    const y2 = res.Y2;
+    const xT = res.resultadoFinalX;
+    const yT = res.yTarget;
+
+    const allX = [x1, x2, xT];
+    const allY = [y1, y2, yT];
+
+    const minX = Math.min(...allX);
+    const maxX = Math.max(...allX);
+    const minY = Math.min(...allY);
+    const maxY = Math.max(...allY);
+
+    const spanX = (maxX - minX) || 1;
+    const spanY = (maxY - minY) || 1;
+
+    const boundMinX = minX - spanX * 0.22;
+    const boundMaxX = maxX + spanX * 0.22;
+    const boundMinY = minY - spanY * 0.22;
+    const boundMaxY = maxY + spanY * 0.22;
+
+    const totalSpanX = boundMaxX - boundMinX;
+    const totalSpanY = boundMaxY - boundMinY;
+
+    const padLeft = 60;
+    const padRight = 50;
+    const padTop = 35;
+    const padBottom = 45;
+    const plotW = width - padLeft - padRight;
+    const plotH = height - padTop - padBottom;
+
+    const toX = val => padLeft + ((val - boundMinX) / totalSpanX) * plotW;
+    const toY = val => (height - padBottom) - ((val - boundMinY) / totalSpanY) * plotH;
+
+    // Rejilla sutil
+    ctx.strokeStyle = colors.grid;
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const yGrid = padTop + (plotH / 4) * i;
+      ctx.beginPath();
+      ctx.moveTo(padLeft, yGrid);
+      ctx.lineTo(width - padRight, yGrid);
+      ctx.stroke();
+
+      const xGrid = padLeft + (plotW / 4) * i;
+      ctx.beginPath();
+      ctx.moveTo(xGrid, padTop);
+      ctx.lineTo(xGrid, height - padBottom);
+      ctx.stroke();
+    }
+
+    // Ejes Cartesiados
+    ctx.strokeStyle = colors.axis;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(padLeft, padTop);
+    ctx.lineTo(padLeft, height - padBottom);
+    ctx.lineTo(width - padRight, height - padBottom);
+    ctx.stroke();
+
+    // Proyecciones Ortogonales Discontinuas
+    const ptX = toX(xT);
+    const ptY = toY(yT);
+
+    ctx.save();
+    ctx.strokeStyle = colors.dash;
+    ctx.lineWidth = 1.4;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(ptX, ptY);
+    ctx.lineTo(ptX, height - padBottom);
+    ctx.moveTo(ptX, ptY);
+    ctx.lineTo(padLeft, ptY);
+    ctx.stroke();
+    ctx.restore();
+
+    // Segmento Recto que une P1 y P2
+    const p1X = toX(x1);
+    const p1Y = toY(y1);
+    const p2X = toX(x2);
+    const p2Y = toY(y2);
+
+    ctx.strokeStyle = colors.line;
+    ctx.lineWidth = 2.8;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(p1X, p1Y);
+    ctx.lineTo(p2X, p2Y);
+    ctx.stroke();
+
+    // Ticks en Eje X
+    const puntosEjeX = [
+      { x: x1, color: colors.p1, label: `X₁=${formatearNum(x1, 3)}` },
+      { x: xT, color: colors.target, label: `X=${formatearNum(xT, decimalesInterp)}`, bold: true },
+      { x: x2, color: colors.p2, label: `X₂=${formatearNum(x2, 3)}` }
+    ];
+
+    puntosEjeX.forEach(p => {
+      const cx = toX(p.x);
+      ctx.strokeStyle = p.color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx, height - padBottom);
+      ctx.lineTo(cx, height - padBottom + 5);
+      ctx.stroke();
+
+      ctx.fillStyle = p.color;
+      ctx.font = p.bold ? '600 10px var(--font-apple-mono)' : '500 10px var(--font-apple-mono)';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.label, cx, height - padBottom + 17);
+    });
+
+    // Ticks en Eje Y
+    const puntosEjeY = [
+      { y: y1, color: colors.p1, label: `Y₁=${formatearNum(y1, 3)}` },
+      { y: yT, color: colors.target, label: `Y=${formatearNum(yT, 3)}`, bold: true },
+      { y: y2, color: colors.p2, label: `Y₂=${formatearNum(y2, 3)}` }
+    ];
+
+    puntosEjeY.forEach(p => {
+      const cy = toY(p.y);
+      ctx.strokeStyle = p.color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(padLeft - 5, cy);
+      ctx.lineTo(padLeft, cy);
+      ctx.stroke();
+
+      ctx.fillStyle = p.color;
+      ctx.font = p.bold ? '600 10px var(--font-apple-mono)' : '500 10px var(--font-apple-mono)';
+      ctx.textAlign = 'right';
+      ctx.fillText(p.label, padLeft - 7, cy + 3.5);
+    });
+
+    // Punto 1 (X1, Y1)
+    ctx.fillStyle = colors.p1;
+    ctx.beginPath();
+    ctx.arc(p1X, p1Y, 5.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = colors.pointBorder;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = colors.p1;
+    ctx.font = '600 11px -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif';
+    ctx.textAlign = p1X < p2X ? 'right' : 'left';
+    ctx.fillText('P₁ (X₁, Y₁)', p1X + (p1X < p2X ? -10 : 10), p1Y - 8);
+
+    // Punto 2 (X2, Y2)
+    ctx.fillStyle = colors.p2;
+    ctx.beginPath();
+    ctx.arc(p2X, p2Y, 5.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = colors.pointBorder;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = colors.p2;
+    ctx.font = '600 11px -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif';
+    ctx.textAlign = p2X > p1X ? 'left' : 'right';
+    ctx.fillText('P₂ (X₂, Y₂)', p2X + (p2X > p1X ? 10 : -10), p2Y - 8);
+
+    // Punto Interpolado (P) con Resplandor
+    ctx.fillStyle = colors.targetGlow;
+    ctx.beginPath();
+    ctx.arc(ptX, ptY, 13, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = colors.target;
+    ctx.beginPath();
+    ctx.arc(ptX, ptY, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = colors.pointBorder;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = colors.target;
+    ctx.font = '700 11px -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`P (${formatearNum(xT, decimalesInterp)}, ${formatearNum(yT, 3)})`, ptX, ptY - 15);
+  }
+
+  // Actualizar UI con resultados de Interpolación
+  function actualizarUIInterpolacion(res) {
+    ultimoCalculoInterp = res;
+
+    // Resultado Principal
+    resInterpX.textContent = formatearNum(res.resultadoFinalX, decimalesInterp);
+
+    const x1Str = formatearNum(res.X1, 4);
+    const x2Str = formatearNum(res.X2, 4);
+    const yTargetStr = formatearNum(res.yTarget, 4);
+    const xResStr = formatearNum(res.resultadoFinalX, decimalesInterp);
+
+    resInterpDetalle.textContent = `Para un valor conocido Y = ${yTargetStr}, el valor estimado de X es ${xResStr} (interpolado linealmente entre X₁=${x1Str} y X₂=${x2Str}).`;
+
+    // Métricas
+    metaDiffX.textContent = formatearNum(res.diffX, 4);
+    metaDiffY.textContent = formatearNum(res.diffY, 4);
+    metaDiffYTarget.textContent = formatearNum(res.diffYTarget, 4);
+    metaAvance.textContent = `${res.avancePct.toFixed(2)}%`;
+    metaPendiente.textContent = res.pendiente !== null ? res.pendiente.toFixed(4) : 'N/A';
+    metaExactoInterp.textContent = res.resultadoFinalX.toString();
+
+    // Procedimiento en texto plano
+    interpProcedimientoTexto.textContent = generarProcedimientoTexto(res, decimalesInterp);
+
+    // Desglose de Operaciones
+    renderizarDesgloseInterpolacion(res);
+
+    // Actualizar Leyendas
+    legP1.textContent = `(${formatearNum(res.X1, 3)}, ${formatearNum(res.Y1, 3)})`;
+    legTarget.textContent = `(${formatearNum(res.resultadoFinalX, decimalesInterp)}, ${formatearNum(res.yTarget, 3)})`;
+    legP2.textContent = `(${formatearNum(res.X2, 3)}, ${formatearNum(res.Y2, 3)})`;
+
+    // Gráfico Canvas
+    dibujarGraficoInterpolacion();
+
+    // Guardar en Historial
+    guardarEnHistorialInterp(res);
+  }
+
+  // Ejecución de la Interpolación
+  function ejecutarCalculoInterpolacion() {
+    if (!validarFormularioInterpolacion()) {
+      return;
+    }
+
+    const X1 = parseFloat(inputX1.value);
+    const Y1 = parseFloat(inputY1.value);
+    const X2 = parseFloat(inputX2.value);
+    const Y2 = parseFloat(inputY2.value);
+    const yTarget = parseFloat(inputYTarget.value);
+
+    const resultado = calcularInterpolacion(X1, Y1, X2, Y2, yTarget);
+    actualizarUIInterpolacion(resultado);
+  }
+
+  // Invertir variables X e Y
+  function invertirXYInterpolacion() {
+    const tempX1 = inputX1.value;
+    const tempY1 = inputY1.value;
+    const tempX2 = inputX2.value;
+    const tempY2 = inputY2.value;
+
+    inputX1.value = tempY1;
+    inputY1.value = tempX1;
+    inputX2.value = tempY2;
+    inputY2.value = tempX2;
+
+    if (ultimoCalculoInterp) {
+      inputYTarget.value = ultimoCalculoInterp.resultadoFinalX.toString();
+    }
+
+    mostrarToast('Variables X e Y intercambiadas');
+    ejecutarCalculoInterpolacion();
+  }
+
+  // Copiado del Resumen de Interpolación
+  function copiarResumenInterpolacion() {
+    if (!ultimoCalculoInterp) return;
+
+    const res = ultimoCalculoInterp;
+    const texto = 
+`Resultado de Interpolación Lineal (V0.5 — macOS Edition)
+-------------------------------------------------------
+Punto 1 (X1, Y1) : (${res.X1}, ${res.Y1})
+Punto 2 (X2, Y2) : (${res.X2}, ${res.Y2})
+Valor Y a buscar : ${res.yTarget}
+
+Resultado de X   : ${formatearNum(res.resultadoFinalX, decimalesInterp)}
+Valor exacto     : ${res.resultadoFinalX}
+Diferencia en X  : ${res.diffX}
+Diferencia en Y  : ${res.diffY}
+Diferencia obj   : ${res.diffYTarget}
+Avance intervalo : ${res.avancePct.toFixed(2)}%
+
+Fórmula: X = X1 + [ (X2 - X1) · (Y - Y1) ] / (Y2 - Y1)`;
+
+    copiarTextoPortapapeles(texto, () => {
+      copyBtnTextInterp.textContent = 'Copiado';
+      copyIconInterp.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+      setTimeout(() => {
+        copyBtnTextInterp.textContent = 'Copiar';
+        copyIconInterp.innerHTML = `
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        `;
+      }, 2000);
+    });
+  }
+
+  // Copiado del Procedimiento en Texto Plano
+  function copiarProcedimientoInterpolacion() {
+    if (!ultimoCalculoInterp) return;
+
+    const texto = generarProcedimientoTexto(ultimoCalculoInterp, decimalesInterp);
+    copiarTextoPortapapeles(texto, () => {
+      mostrarToast('Procedimiento copiado al portapapeles');
+    });
+  }
+
+  // Historial de Interpolación en LocalStorage
+  function cargarHistorialInterp() {
+    try {
+      const data = localStorage.getItem(STORAGE_INTERP_HISTORY_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function guardarEnHistorialInterp(resultado) {
+    try {
+      const historial = cargarHistorialInterp();
+      const nuevoItem = {
+        id: Date.now(),
+        x1: resultado.X1,
+        y1: resultado.Y1,
+        x2: resultado.X2,
+        y2: resultado.Y2,
+        yTarget: resultado.yTarget,
+        xResultado: resultado.resultadoFinalX,
+        fecha: new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })
+      };
+
+      if (historial.length > 0) {
+        const u = historial[0];
+        if (
+          u.x1 === nuevoItem.x1 &&
+          u.y1 === nuevoItem.y1 &&
+          u.x2 === nuevoItem.x2 &&
+          u.y2 === nuevoItem.y2 &&
+          u.yTarget === nuevoItem.yTarget
+        ) {
+          return;
+        }
+      }
+
+      historial.unshift(nuevoItem);
+      if (historial.length > 5) {
+        historial.pop();
+      }
+
+      localStorage.setItem(STORAGE_INTERP_HISTORY_KEY, JSON.stringify(historial));
+      renderizarHistorialInterp();
+    } catch (e) {
+      // Ignorar errores de almacenamiento
+    }
+  }
+
+  function renderizarHistorialInterp() {
+    const historial = cargarHistorialInterp();
+
+    if (!historial || historial.length === 0) {
+      interpHistorialLista.innerHTML = `
+        <div class="empty-history">
+          <p>No hay interpolaciones registradas recientemente.</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    historial.forEach(item => {
+      html += `
+        <div class="apple-history-item" data-id="${item.id}">
+          <div class="history-info">
+            <span class="history-main">Y = ${item.yTarget} ➔ X = ${formatearNum(item.xResultado, 4)}</span>
+            <span class="history-sub">De [${item.x1}, ${item.y1}] a [${item.x2}, ${item.y2}]</span>
+            <span class="history-time">(${item.fecha})</span>
+          </div>
+          <div class="history-actions">
+            <button type="button" class="btn-load btn-load-interp" data-id="${item.id}">Cargar</button>
+          </div>
+        </div>
+      `;
+    });
+
+    interpHistorialLista.innerHTML = html;
+
+    interpHistorialLista.querySelectorAll('.btn-load-interp').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.getAttribute('data-id'));
+        const item = historial.find(h => h.id === id);
+        if (item) {
+          inputX1.value = item.x1;
+          inputY1.value = item.y1;
+          inputX2.value = item.x2;
+          inputY2.value = item.y2;
+          inputYTarget.value = item.yTarget;
+          ejecutarCalculoInterpolacion();
+          mostrarToast('Parámetros de interpolación restaurados');
+        }
+      });
+    });
+  }
+
+  // ==========================================================================
   // Escuchadores de Eventos
   // ==========================================================================
 
   // Pestañas
   tabBtnMuestra.addEventListener('click', () => cambiarModulo('muestra'));
   tabBtnDesviacion.addEventListener('click', () => cambiarModulo('desviacion'));
+  tabBtnInterpolacion.addEventListener('click', () => cambiarModulo('interpolacion'));
 
   // Eventos Módulo 1 (Muestra)
   formMuestra.addEventListener('submit', function (ev) {
@@ -1250,7 +1962,7 @@ Corrección de Bessel:
 
   btnCopiarDesv.addEventListener('click', copiarResumenDesviacion);
 
-  // Chips de Presets
+  // Chips de Presets (Desviación)
   presetChips.forEach(chip => {
     chip.addEventListener('click', () => {
       const presetKey = chip.getAttribute('data-preset');
@@ -1303,12 +2015,112 @@ Corrección de Bessel:
     });
   }
 
+  // Eventos Módulo 3 (Interpolación Lineal)
+  formInterp.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    ejecutarCalculoInterpolacion();
+  });
+
+  [inputX1, inputY1, inputX2, inputY2, inputYTarget].forEach(input => {
+    input.addEventListener('input', () => {
+      interpAlertaGlobal.style.display = 'none';
+      input.classList.remove('input-invalid');
+      const errEl = document.getElementById(`${input.id}-error`);
+      if (errEl) errEl.textContent = '';
+    });
+  });
+
+  btnResetInterp.addEventListener('click', function () {
+    inputX1.value = '1.7613';
+    inputY1.value = '0.05';
+    inputX2.value = '2.1448';
+    inputY2.value = '0.025';
+    inputYTarget.value = '0.035';
+
+    [inputX1, inputY1, inputX2, inputY2, inputYTarget].forEach(i => {
+      i.classList.remove('input-invalid');
+      const err = document.getElementById(`${i.id}-error`);
+      if (err) err.textContent = '';
+    });
+    interpAlertaGlobal.style.display = 'none';
+
+    interpPresetChips.forEach((c, idx) => {
+      c.classList.toggle('active', idx === 0);
+    });
+
+    ejecutarCalculoInterpolacion();
+    mostrarToast('Valores de interpolación restablecidos');
+  });
+
+  btnInvertirInterp.addEventListener('click', invertirXYInterpolacion);
+  btnCopiarInterp.addEventListener('click', copiarResumenInterpolacion);
+  btnCopiarProcInterp.addEventListener('click', copiarProcedimientoInterpolacion);
+
+  btnLimpiarHistorialInterp.addEventListener('click', function () {
+    try {
+      localStorage.removeItem(STORAGE_INTERP_HISTORY_KEY);
+      renderizarHistorialInterp();
+      mostrarToast('Historial de interpolación vaciado');
+    } catch (e) {
+      // Ignorar
+    }
+  });
+
+  // Chips de Presets de Interpolación
+  interpPresetChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const presetKey = chip.getAttribute('data-interp-preset');
+      if (INTERP_PRESETS[presetKey]) {
+        interpPresetChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+
+        const p = INTERP_PRESETS[presetKey];
+        inputX1.value = p.x1;
+        inputY1.value = p.y1;
+        inputX2.value = p.x2;
+        inputY2.value = p.y2;
+        inputYTarget.value = p.yTarget;
+
+        [inputX1, inputY1, inputX2, inputY2, inputYTarget].forEach(i => {
+          i.classList.remove('input-invalid');
+          const err = document.getElementById(`${i.id}-error`);
+          if (err) err.textContent = '';
+        });
+        interpAlertaGlobal.style.display = 'none';
+
+        ejecutarCalculoInterpolacion();
+        mostrarToast(`Ejemplo cargado: ${p.label || chip.textContent.trim()}`);
+      }
+    });
+  });
+
+  // Segmented Control de Redondeo Dinámico
+  roundingBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      roundingBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-checked', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-checked', 'true');
+
+      const decVal = btn.getAttribute('data-decimals');
+      decimalesInterp = decVal === 'exact' ? 'exact' : parseInt(decVal, 10);
+
+      if (ultimoCalculoInterp) {
+        actualizarUIInterpolacion(ultimoCalculoInterp);
+      }
+    });
+  });
+
   // Redimensionamiento de ventana (Debounce)
   window.addEventListener('resize', () => {
     if (resizeTimer) clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       if (moduloActivo === 'desviacion') {
         dibujarGraficoEstadistico();
+      } else if (moduloActivo === 'interpolacion') {
+        dibujarGraficoInterpolacion();
       }
     }, 120);
   });
@@ -1318,6 +2130,8 @@ Corrección de Bessel:
   // ==========================================================================
   inicializarTema();
   renderizarHistorial();
+  renderizarHistorialInterp();
   ejecutarCalculoMuestra();
   ejecutarCalculoDesviacion();
+  ejecutarCalculoInterpolacion();
 })();

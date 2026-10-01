@@ -1734,4 +1734,164 @@ body {
     gap: 4px;
     align-items: flex-start;
   }
+
+  .interp-fields-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .interp-segmented-rounding {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
+
+/* ==========================================================================
+   Módulo de Interpolación Lineal (V0.5 — macOS & iOS Style)
+   ========================================================================== */
+.interp-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.interp-point-card {
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.interp-point-card:focus-within {
+  border-color: rgba(0, 122, 255, 0.38);
+}
+
+.interp-target-card {
+  border-color: rgba(255, 149, 0, 0.28);
+  background-color: rgba(255, 149, 0, 0.03);
+}
+
+[data-theme="dark"] .interp-target-card {
+  border-color: rgba(255, 159, 10, 0.32);
+  background-color: rgba(255, 159, 10, 0.05);
+}
+
+.interp-point-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.interp-point-badge {
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--system-blue);
+}
+
+.interp-badge-target {
+  color: var(--system-orange);
+}
+
+.interp-point-coords {
+  font-family: var(--font-apple-mono);
+  font-size: 0.78rem;
+  color: var(--label-secondary);
+}
+
+.interp-fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.interp-segmented-rounding {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.apple-alert-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  margin-bottom: 14px;
+  animation: appleShake 0.35s ease;
+}
+
+.apple-alert-box.error {
+  background-color: var(--system-red-tint);
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  color: var(--system-red);
+}
+
+.apple-alert-box .alert-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+@keyframes appleShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+.status-dot-interp {
+  background-color: var(--system-orange);
+  box-shadow: 0 0 8px rgba(255, 149, 0, 0.45);
+}
+
+.plain-text-procedure-wrapper {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.procedure-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.procedure-box-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--label-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.plain-text-code {
+  white-space: pre-wrap;
+  font-family: var(--font-apple-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  max-height: 250px;
+  overflow-y: auto;
+  color: var(--label-primary);
+}
+
+.swatch-p1 {
+  background-color: var(--system-blue);
+}
+
+.swatch-target {
+  background-color: var(--system-orange);
+}
+
+.swatch-p2 {
+  background-color: var(--system-green);
+}
+

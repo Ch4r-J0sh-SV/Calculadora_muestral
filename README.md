@@ -1,35 +1,66 @@
-# Calculadora Estadística — Muestra y Dispersión
+# Calculadora Estadística — Muestra, Dispersión e Interpolación Lineal
 
-Herramienta web interactiva para estadística inferencial y descriptiva. Incluye dos módulos principales: determinación del tamaño muestral para poblaciones finitas y análisis comparativo de dispersión (desviación estándar poblacional y muestral) con gráficos nativos en Canvas.
+Herramienta web interactiva para estadística inferencial y descriptiva. Incluye tres módulos principales: determinación del tamaño muestral para poblaciones finitas, análisis comparativo de dispersión (desviación estándar poblacional y muestral) con gráficos nativos en Canvas, y una herramienta avanzada de interpolación lineal para tablas estadísticas con motor algorítmico paso a paso.
 
 Enlace público en GitHub Pages: [https://ch4r-j0sh-sv.github.io/Calculadora_muestral/](https://ch4r-j0sh-sv.github.io/Calculadora_muestral/)
 
 ---
 
-## 1. Novedades de la Versión V0.4 (Módulo de Dispersión & Gráficos)
+## 1. Novedades de la Versión V0.5 (Módulo de Interpolación Lineal)
 
-Esta versión amplía la calculadora con un módulo de análisis de dispersión y un motor gráfico nativo sin librerías externas:
+Esta versión amplía la calculadora con un módulo de interpolación lineal optimizado para la consulta de cuantiles y valores críticos en tablas estadísticas:
 
-- **Arquitectura de Pestañas macOS (*Segmented Toolbar*):** Permite alternar instantáneamente entre el módulo de *Tamaño de Muestra* y el de *Desviación Estándar*, preservando el estado de los cálculos, la accesibilidad de teclado (`role="tab"`) y la reactividad del modo oscuro/claro.
-- **Motor Estadístico Dual (Población vs. Muestra):**
-  - **Desviación Estándar Muestral ($s$):** Aplica la corrección de Bessel dividiendo entre $n - 1$ para proporcionar un estimador insesgado de la varianza poblacional.
-  - **Desviación Estándar Poblacional ($\sigma$):** Cálculo directo dividiendo entre $N$ cuando se dispone del censo total de los datos.
-  - **Métricas complementarias:** Varianza muestral y poblacional ($s^2, \sigma^2$), suma de cuadrados de desviaciones ($SS$), error estándar de la media ($SE = s / \sqrt{n}$), coeficiente de variación ($CV$) y rango muestral.
-  - **Análisis de Bessel explícito:** Cuantificación del factor $\sqrt{n / (n - 1)}$ y del incremento porcentual de variabilidad asignable al sesgo muestral.
-- **Gráficos Interactivos en HTML5 Canvas (0 dependencias):**
-  - **Campana de Gauss (Distribución Normal):** Curva de densidad paramétrica centrada en la media con áreas sombreadas para las zonas empíricas ($\pm 1\sigma = 68.3\%$, $\pm 2\sigma = 95.4\%$, $\pm 3\sigma = 99.7\%$), selector para comparar curvas y proyección de los datos observados en la base (*strip plot*).
-  - **Diagrama de Dispersión & Bandas:** Representa cada observación individual, su conector residual a la media y las bandas de tolerancia $\pm 1s$ y $\pm 1\sigma$.
-  - **Soporte HiDPI / Retina:** Escalado automático mediante `window.devicePixelRatio` para garantizar trazos nítidos en monitores 4K/5K y pantallas móviles.
-  - **Tema dinámico:** Los colores de ejes, rejillas, etiquetas y curvas se recalculan en tiempo real al cambiar entre modo oscuro y claro.
-- **Parser Flexible de Entrada:** Procesa series numéricas separadas por comas, espacios, tabulaciones o saltos de línea (ideal para pegar columnas de Excel, CSV o Google Sheets).
-- **Desglose Algebraico Paso a Paso:** Tabla detallada con las diferencias individuales $(x_i - \bar{x})$ y sus cuadrados $(x_i - \bar{x})^2$, junto con la fila de sumatorias.
-- **Presets de Prueba Rápida:** Carga de series de ejemplo con un clic (Calificaciones, Tiempos de respuesta, Pesos en gramos).
+- **Estructura UI Nativa estilo macOS / iOS:**
+  - Formulario con 5 campos de entrada numéricos:
+    - **Valor X1:** Primer límite de la variable objetivo / incógnita.
+    - **Valor Y1:** Primer límite del valor conocido en la tabla.
+    - **Valor X2:** Segundo límite de la variable objetivo / incógnita.
+    - **Valor Y2:** Segundo límite del valor conocido en la tabla.
+    - **Valor Y a buscar:** El punto medio o valor específico conocido.
+  - Botón de acción **"Calcular"**, botón de **"Restablecer"** y botón rápido **"Invertir X ⇄ Y"**.
+  - Contenedor de salida destacado con el **"Resultado de X"**.
+- **Lógica de Validación Rigurosa:**
+  - Verifica que los 5 campos estén completos y contengan únicamente valores numéricos.
+  - Comprueba que $Y_2$ sea estrictamente diferente a $Y_1$. Si son iguales, detiene la ejecución y despliega la alerta oficial:
+    `"Error: Los valores de Y1 y Y2 no pueden ser iguales (evita división por cero)"`.
+- **Motor Interno de 6 Operaciones Algorítmicas:**
+  - **Operación A:** Restar ($X_2 - X_1$) $\to$ *Diferencia de X*.
+  - **Operación B:** Restar ($Y_2 - Y_1$) $\to$ *Diferencia de Y*.
+  - **Operación C:** Restar ($Y_{\text{buscar}} - Y_1$) $\to$ *Diferencia Objetivo*.
+  - **Operación D:** Multiplicar (*Diferencia de X* $\cdot$ *Diferencia Objetivo*).
+  - **Operación E:** Dividir el resultado de la *Operación D* entre la *Diferencia de Y*.
+  - **Operación F (Resultado Final):** Sumar el *Valor X1* con el resultado de la *Operación E*.
+- **Presentación del Resultado y Redondeo Dinámico:**
+  - Muestra el valor de $X$ con selector dinámico de precisión (4 decimales por defecto para tablas estadísticas, 3 decimales, 2 decimales o valor exacto sin redondear).
+  - Desglose con tarjetas individuales para cada una de las 6 operaciones matemáticas.
+  - **Procedimiento de reemplazo en texto plano:** Bloque monoespaciado listo para validar el procedimiento y botón de copiado con un solo clic para pegar en reportes y tareas.
+- **Gráfico Cartesiano Interactivo en Canvas Retina:**
+  - Representación del segmento entre $(X_1, Y_1)$ y $(X_2, Y_2)$ con las proyecciones ortogonales punteadas al punto interpolado $(X, Y)$ en el plano cartesiano.
+- **Presets de Tablas Estadísticas:**
+  - Carga inmediata de casos reales: Distribución t de Student ($gl=14, p=0.035$), Distribución Normal Estándar Z (área = 0.9760), Chi-Cuadrado ($gl=10$) y ejemplo base.
+- **Historial Local:**
+  - Almacena las últimas interpolaciones en `localStorage` con fecha y permite restaurar parámetros con un clic.
 
 ---
 
 ## 2. Fundamentación Matemática
 
-### 2.1 Tamaño de Muestra para Población Finita (Proporciones)
+### 2.1 Interpolación Lineal para Tablas Estadísticas
+
+Dadas dos parejas de valores conocidos $(X_1, Y_1)$ y $(X_2, Y_2)$, para un valor conocido $Y$ situado en el intervalo, la aproximación por segmento recto determina el valor correspondiente $X$:
+
+$$X = X_1 + \left( \frac{X_2 - X_1}{Y_2 - Y_1} \right) \cdot (Y - Y_1)$$
+
+Desglosado en el algoritmo interno de 6 operaciones:
+
+1. $\Delta X = X_2 - X_1$
+2. $\Delta Y = Y_2 - Y_1 \quad (\Delta Y \neq 0)$
+3. $\Delta Y_{\text{obj}} = Y - Y_1$
+4. $\text{Producto} = \Delta X \cdot \Delta Y_{\text{obj}}$
+5. $\text{Cociente} = \frac{\text{Producto}}{\Delta Y}$
+6. $X_{\text{final}} = X_1 + \text{Cociente}$
+
+### 2.2 Tamaño de Muestra para Población Finita (Proporciones)
 
 Para una población conocida $N$, la fórmula de muestreo probabilístico simple para estimación de proporciones es:
 
@@ -39,7 +70,7 @@ Con redondeo estricto hacia arriba (función techo):
 
 $$n_{\text{final}} = \min\left(\lceil n \rceil, N\right)$$
 
-### 2.2 Desviación Estándar Poblacional vs. Muestral
+### 2.3 Desviación Estándar Poblacional vs. Muestral
 
 Dado un conjunto de datos $\{x_1, x_2, \dots, x_n\}$ con media aritmética $\bar{x} = \mu = \frac{1}{n}\sum_{i=1}^n x_i$:
 
@@ -49,15 +80,13 @@ Aplica cuando los datos representan la totalidad del universo delimitado:
 $$\sigma = \sqrt{\frac{\sum_{i=1}^N (x_i - \mu)^2}{N}}$$
 
 #### Desviación Estándar Muestral ($s$)
-Aplica cuando los datos provienen de una muestra y se busca inferir el comportamiento de la población. La división entre $n - 1$ (**corrección de Bessel**) corrige la tendencia natural a subestimar la varianza debida a que los datos están sistemáticamente más cerca de la media muestral $\bar{x}$ que de la media poblacional real $\mu$:
+Aplica cuando los datos provienen de una muestra y se busca inferir el comportamiento de la población. La división entre $n - 1$ (**corrección de Bessel**) corrige la tendencia natural a subestimar la varianza:
 
 $$s = \sqrt{\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n - 1}}$$
 
 #### Relación y Factor de Bessel
 
 $$s = \sigma \cdot \sqrt{\frac{n}{n - 1}}$$
-
-A medida que $n$ aumenta, $\sqrt{n / (n - 1)} \to 1$, reduciendo la brecha entre el estimador muestral y el poblacional.
 
 ---
 
@@ -77,7 +106,8 @@ Calculadora muestral/
 
 ## 4. Historial de Versiones y Ramas Git
 
-- **`main`:** Versión actual **V0.4** con módulo de desviación estándar, gráficos interactivos en Canvas y navegación modular.
+- **`main`:** Versión actual **V0.5** con herramienta de interpolación lineal, módulo de desviación estándar, gráficos interactivos en Canvas y determinación de tamaño muestral.
+- **`v0.4-respaldo` / `v0.4`:** Rama con la versión **V0.4** (módulo de desviación estándar y gráficos interactivos).
 - **`v0.3-respaldo` / `v0.3`:** Rama con la versión **V0.3** (rediseño completo estilo Apple macOS/iOS).
 - **`v0.2-respaldo` / `v0.2`:** Rama con la versión **V0.2** (interfaz académica sobria).
 - **`v0.1-respaldo`:** Rama con la versión inicial **V0.1**.
@@ -108,6 +138,6 @@ Los despliegues en GitHub Pages se sincronizan automáticamente desde la rama `m
 
 ```bash
 git add .
-git commit -m "V0.4: Módulo de desviación estándar poblacional y muestral con gráficos interactivos"
+git commit -m "V0.5: Herramienta de interpolación lineal para tablas estadísticas"
 git push origin main
 ```

@@ -32,7 +32,7 @@
           <path d="M18 9l-5 5-4-4-3 3" />
         </svg>
         <span class="title-text">Calculadora Estadística</span>
-        <span class="version-badge">v0.4</span>
+        <span class="version-badge">v0.5</span>
       </div>
 
       <!-- Interruptor de Modo Oscuro estilo iOS -->
@@ -70,6 +70,15 @@
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
             </svg>
             <span>Desviación Estándar</span>
+          </button>
+          <button type="button" class="macos-tab-btn" role="tab" id="tab-btn-interpolacion" aria-selected="false" aria-controls="view-interpolacion" data-tab="interpolacion">
+            <svg class="sf-icon tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="4" y1="20" x2="20" y2="4"></line>
+              <circle cx="4" cy="20" r="2.5"></circle>
+              <circle cx="12" cy="12" r="2.5"></circle>
+              <circle cx="20" cy="4" r="2.5"></circle>
+            </svg>
+            <span>Interpolación Lineal</span>
           </button>
         </nav>
       </div>
@@ -770,6 +779,455 @@
         </section>
 
       </div> <!-- Fin de view-desviacion -->
+
+      <!-- ================================================================= -->
+      <!-- Vista 3: Interpolación Lineal (Tablas Estadísticas)               -->
+      <!-- ================================================================= -->
+      <div class="tab-panel" id="view-interpolacion" role="tabpanel" aria-labelledby="tab-btn-interpolacion" hidden>
+
+        <!-- Panel de Entrada de Datos -->
+        <section class="apple-card form-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <svg class="sf-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="4" y1="20" x2="20" y2="4"></line>
+                <circle cx="4" cy="20" r="2.5"></circle>
+                <circle cx="12" cy="12" r="2.5"></circle>
+                <circle cx="20" cy="4" r="2.5"></circle>
+                <line x1="12" y1="12" x2="12" y2="20" stroke-dasharray="2 2"></line>
+                <line x1="4" y1="12" x2="12" y2="12" stroke-dasharray="2 2"></line>
+              </svg>
+              <h2>Herramienta de Interpolación Lineal</h2>
+            </div>
+            <span class="card-sublabel">Estimación en tablas estadísticas</span>
+          </div>
+
+          <!-- Presets de Datos de Ejemplo Estadístico -->
+          <div class="presets-section">
+            <span class="presets-label">Cargar caso de tabla estadística:</span>
+            <div class="presets-chips" role="group" aria-label="Casos de interpolación predefinidos">
+              <button type="button" class="preset-chip active" data-interp-preset="t-student">
+                <span>t-Student (gl=14, p=0.035)</span>
+              </button>
+              <button type="button" class="preset-chip" data-interp-preset="normal-z">
+                <span>Normal Z (área=0.9760)</span>
+              </button>
+              <button type="button" class="preset-chip" data-interp-preset="chi-cuadrado">
+                <span>Chi-Cuadrado (gl=10, α=0.03)</span>
+              </button>
+              <button type="button" class="preset-chip" data-interp-preset="lineal-simple">
+                <span>Ejemplo Base (10 a 20)</span>
+              </button>
+            </div>
+          </div>
+
+          <form id="form-interpolacion" novalidate>
+            <!-- Alerta de Error Destacada (División por cero o campos inválidos) -->
+            <div id="interp-alerta-global" class="apple-alert-box error" role="alert" style="display: none;">
+              <svg class="sf-icon alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span id="interp-alerta-texto">Error: Los valores de Y1 y Y2 no pueden ser iguales (evita división por cero)</span>
+            </div>
+
+            <!-- Grupo de Límites de Referencia -->
+            <div class="interp-grid">
+              
+              <!-- Fila 1: Punto 1 (X1, Y1) -->
+              <div class="interp-point-card">
+                <div class="interp-point-header">
+                  <span class="interp-point-badge">Punto 1 (Límite Inferior)</span>
+                  <span class="interp-point-coords">(X₁, Y₁)</span>
+                </div>
+                <div class="interp-fields-row">
+                  <!-- Campo 1: Valor X1 -->
+                  <div class="form-group">
+                    <label for="interp-x1" class="field-label">
+                      Valor X1 <span class="param-symbol">(Primer límite objetivo)</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <input 
+                        type="number" 
+                        step="any" 
+                        id="interp-x1" 
+                        name="interp-x1" 
+                        value="1.7613" 
+                        required 
+                        aria-describedby="interp-x1-error" 
+                        class="apple-input" 
+                        placeholder="Ej. 1.7613"
+                      >
+                    </div>
+                    <span id="interp-x1-error" class="error-message" role="alert"></span>
+                  </div>
+
+                  <!-- Campo 2: Valor Y1 -->
+                  <div class="form-group">
+                    <label for="interp-y1" class="field-label">
+                      Valor Y1 <span class="param-symbol">(Primer límite conocido)</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <input 
+                        type="number" 
+                        step="any" 
+                        id="interp-y1" 
+                        name="interp-y1" 
+                        value="0.05" 
+                        required 
+                        aria-describedby="interp-y1-error" 
+                        class="apple-input" 
+                        placeholder="Ej. 0.05"
+                      >
+                    </div>
+                    <span id="interp-y1-error" class="error-message" role="alert"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fila 2: Punto 2 (X2, Y2) -->
+              <div class="interp-point-card">
+                <div class="interp-point-header">
+                  <span class="interp-point-badge">Punto 2 (Límite Superior)</span>
+                  <span class="interp-point-coords">(X₂, Y₂)</span>
+                </div>
+                <div class="interp-fields-row">
+                  <!-- Campo 3: Valor X2 -->
+                  <div class="form-group">
+                    <label for="interp-x2" class="field-label">
+                      Valor X2 <span class="param-symbol">(Segundo límite objetivo)</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <input 
+                        type="number" 
+                        step="any" 
+                        id="interp-x2" 
+                        name="interp-x2" 
+                        value="2.1448" 
+                        required 
+                        aria-describedby="interp-x2-error" 
+                        class="apple-input" 
+                        placeholder="Ej. 2.1448"
+                      >
+                    </div>
+                    <span id="interp-x2-error" class="error-message" role="alert"></span>
+                  </div>
+
+                  <!-- Campo 4: Valor Y2 -->
+                  <div class="form-group">
+                    <label for="interp-y2" class="field-label">
+                      Valor Y2 <span class="param-symbol">(Segundo límite conocido)</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <input 
+                        type="number" 
+                        step="any" 
+                        id="interp-y2" 
+                        name="interp-y2" 
+                        value="0.025" 
+                        required 
+                        aria-describedby="interp-y2-error" 
+                        class="apple-input" 
+                        placeholder="Ej. 0.025"
+                      >
+                    </div>
+                    <span id="interp-y2-error" class="error-message" role="alert"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fila 3: Valor a Buscar & Precisión -->
+              <div class="interp-point-card interp-target-card">
+                <div class="interp-point-header">
+                  <span class="interp-point-badge interp-badge-target">Valor Conocido de Consulta</span>
+                  <span class="interp-point-coords">Punto de Interpolación</span>
+                </div>
+                <div class="interp-fields-row">
+                  <!-- Campo 5: Valor Y a buscar -->
+                  <div class="form-group">
+                    <label for="interp-y-target" class="field-label">
+                      Valor Y a buscar <span class="param-symbol">(Punto medio o específico conocido)</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <input 
+                        type="number" 
+                        step="any" 
+                        id="interp-y-target" 
+                        name="interp-y-target" 
+                        value="0.035" 
+                        required 
+                        aria-describedby="interp-y-target-error" 
+                        class="apple-input" 
+                        placeholder="Ej. 0.035"
+                      >
+                    </div>
+                    <span id="interp-y-target-error" class="error-message" role="alert"></span>
+                  </div>
+
+                  <!-- Selector de Redondeo Dinámico -->
+                  <div class="form-group">
+                    <label class="field-label">
+                      Redondeo dinámico <span class="param-symbol">(Tablas estadísticas)</span>
+                    </label>
+                    <div class="segmented-control interp-segmented-rounding" id="segmented-interp-rounding" role="radiogroup" aria-label="Número de decimales">
+                      <button type="button" class="segment-btn active" data-decimals="4" role="radio" aria-checked="true">
+                        <span>4 decimales</span>
+                      </button>
+                      <button type="button" class="segment-btn" data-decimals="3" role="radio" aria-checked="false">
+                        <span>3 decimales</span>
+                      </button>
+                      <button type="button" class="segment-btn" data-decimals="2" role="radio" aria-checked="false">
+                        <span>2 decimales</span>
+                      </button>
+                      <button type="button" class="segment-btn" data-decimals="exact" role="radio" aria-checked="false">
+                        <span>Exacto</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Acciones del formulario -->
+            <div class="form-actions">
+              <button type="submit" id="btn-calcular-interp" class="apple-btn btn-primary">
+                <svg class="sf-icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                <span>Calcular</span>
+              </button>
+              <button type="button" id="btn-reset-interp" class="apple-btn btn-secondary" title="Restablecer valores predeterminados">
+                <svg class="sf-icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                  <path d="M3 3v5h5"/>
+                </svg>
+                <span>Restablecer</span>
+              </button>
+              <button type="button" id="btn-invertir-interp" class="apple-btn btn-secondary" title="Intercambiar valores X e Y (buscar Y a partir de X)">
+                <svg class="sf-icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M7 16V4M7 4L3 8M7 4l4 4M17 8v12M17 20l-4-4M17 20l4-4"/>
+                </svg>
+                <span>Invertir X ⇄ Y</span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Panel de Resultado Principal de Interpolación -->
+        <section id="interp-resultado" class="apple-card result-card interp-result-card" aria-live="polite">
+          <div class="result-header">
+            <div class="result-status-indicator">
+              <span class="status-dot status-dot-interp" aria-hidden="true"></span>
+              <span class="status-text">Interpolación Lineal Exitosa</span>
+            </div>
+            <button type="button" id="btn-copiar-interp" class="apple-btn btn-action-sm" title="Copiar resultado al portapapeles">
+              <svg class="sf-icon btn-sm-icon" id="copy-icon-interp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span id="copy-btn-text-interp">Copiar</span>
+            </button>
+          </div>
+
+          <div class="result-display">
+            <span class="result-label-badge">Resultado de X</span>
+            <div class="result-number-group">
+              <span id="interp-resultado-x" class="result-number">1.9914</span>
+              <span class="result-unit" id="interp-resultado-unit">valor objetivo</span>
+            </div>
+            <p id="interp-resultado-detalle" class="result-summary">
+              Para un valor conocido Y = 0.035, el valor interpolado es X = 1.9914 entre los límites [1.7613, 2.1448].
+            </p>
+          </div>
+
+          <!-- Métricas Complementarias del Intervalo -->
+          <div class="result-metrics-grid">
+            <div class="metric-card">
+              <span class="metric-label">Diferencia de X (X₂ - X₁)</span>
+              <span id="interp-meta-diff-x" class="metric-value">0.3835</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Diferencia de Y (Y₂ - Y₁)</span>
+              <span id="interp-meta-diff-y" class="metric-value">-0.0250</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Diferencia Objetivo (Y - Y₁)</span>
+              <span id="interp-meta-diff-ytarget" class="metric-value">-0.0150</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Proporción de avance en el intervalo</span>
+              <span id="interp-meta-avance" class="metric-value">60.00%</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Pendiente de la recta (m = ΔY/ΔX)</span>
+              <span id="interp-meta-pendiente" class="metric-value">-0.0652</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Valor exacto sin redondear</span>
+              <span id="interp-meta-exacto" class="metric-value">1.991400</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Procedimiento de Reemplazo en Texto Plano & Desglose Matemático -->
+        <section class="apple-card details-card">
+          <details id="interp-desglose-details" open class="apple-disclosure">
+            <summary class="disclosure-header">
+              <div class="disclosure-title-group">
+                <svg class="sf-icon disclosure-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+                <h3>Procedimiento de reemplazo paso a paso</h3>
+              </div>
+              <span class="disclosure-badge">Álgebra</span>
+            </summary>
+
+            <div class="disclosure-content">
+              <p class="formula-label">Fórmula estándar de interpolación lineal:</p>
+              <div class="apple-code-box">
+                <code>X = X₁ + [ (X₂ - X₁) · (Y_buscar - Y₁) ] / (Y₂ - Y₁)</code>
+              </div>
+
+              <!-- Procedimiento en Texto Plano para Validación Rápida -->
+              <div class="plain-text-procedure-wrapper">
+                <div class="procedure-box-header">
+                  <span class="procedure-box-title">Procedimiento de reemplazo en texto plano:</span>
+                  <button type="button" id="btn-copiar-procedimiento-interp" class="apple-btn btn-ghost-sm" title="Copiar procedimiento en texto plano">
+                    <svg class="sf-icon btn-sm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                    <span>Copiar texto</span>
+                  </button>
+                </div>
+                <pre id="interp-procedimiento-texto" class="apple-code-box plain-text-code"><!-- Rellenado por script.js --></pre>
+              </div>
+
+              <!-- Desglose Secuencial de Operaciones A a F -->
+              <p class="formula-label" style="margin-top: 14px;">Ejecución secuencial del algoritmo interno:</p>
+              <div id="interp-steps-container" class="steps-grid">
+                <!-- Rellenado dinámicamente por script.js con Operaciones A a F -->
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- Panel de Visualización Gráfica Interactiva -->
+        <section class="apple-card chart-card">
+          <div class="card-header chart-card-header">
+            <div class="card-title-group">
+              <svg class="sf-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <h3>Visualización Geométrica del Segmento</h3>
+            </div>
+            <span class="card-sublabel" id="interp-grafico-sublabel">Plano Cartesiano (X, Y)</span>
+          </div>
+
+          <p class="table-description">
+            Representación gráfica del segmento recto entre (X₁, Y₁) y (X₂, Y₂), mostrando la proyección ortogonal del punto interpolado objetivo (X, Y).
+          </p>
+
+          <!-- Lienzo Canvas con Escalado HiDPI -->
+          <div class="canvas-container">
+            <canvas id="canvas-interpolacion" width="760" height="320" class="stat-canvas" aria-label="Gráfico de interpolación lineal"></canvas>
+          </div>
+
+          <!-- Leyenda del gráfico -->
+          <div class="chart-legend" id="interp-chart-legend">
+            <div class="legend-item">
+              <span class="legend-swatch swatch-p1"></span>
+              <span class="legend-text">Punto 1: <strong id="leg-p1">(1.7613, 0.0500)</strong></span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch swatch-target"></span>
+              <span class="legend-text">Interpolado: <strong id="leg-target">(1.9914, 0.0350)</strong></span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch swatch-p2"></span>
+              <span class="legend-text">Punto 2: <strong id="leg-p2">(2.1448, 0.0250)</strong></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Fundamentación Teórica / Guía de Tablas Estadísticas -->
+        <section class="apple-card details-card">
+          <details id="interp-teoria-details" class="apple-disclosure">
+            <summary class="disclosure-header">
+              <div class="disclosure-title-group">
+                <svg class="sf-icon disclosure-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+                <h3>Fundamentación estadística: ¿Por qué y cómo interpolar en tablas?</h3>
+              </div>
+              <span class="disclosure-badge">Metodología</span>
+            </summary>
+
+            <div class="disclosure-content theory-content">
+              <div class="theory-item">
+                <div class="theory-item-header">
+                  <span class="theory-item-badge">1</span>
+                  <h4>Cuándo aplicar interpolación en estadística</h4>
+                </div>
+                <p>Las tablas impresas de distribuciones continuas (Normal Z, t de Student, Chi-Cuadrado y F de Fisher) presentan valores tabulados para niveles de significancia comunes (ej. 0.01, 0.05, 0.10) o ciertos grados de libertad enteros. Cuando un valor p muestral o los grados de libertad caen entre dos valores tabulados, la interpolación lineal estima el cuantil crítico exacto.</p>
+              </div>
+
+              <div class="theory-item">
+                <div class="theory-item-header">
+                  <span class="theory-item-badge">2</span>
+                  <h4>Supuesto de linealidad local</h4>
+                </div>
+                <p>Aunque las funciones de distribución acumulada (FDA) y sus cuantiles son curvas continuas no lineales, cualquier curva suave es indistinguible de una recta en un vecindario estrecho. Por tanto, interpolar entre dos valores tabulados contiguos produce un error cuadrático insignificante.</p>
+              </div>
+
+              <div class="theory-item">
+                <div class="theory-item-header">
+                  <span class="theory-item-badge">3</span>
+                  <h4>Criterio de redondeo en tablas</h4>
+                </div>
+                <p>En el trabajo con tablas estadísticas, redondear a 3 o 4 decimales preserva la precisión requerida sin arrastrar decimales espurios generados por la máquina. Es el estándar adoptado en manuales de estadística inferencial y econometría.</p>
+              </div>
+
+              <div class="theory-item">
+                <div class="theory-item-header">
+                  <span class="theory-item-badge">4</span>
+                  <h4>Prevención de división por cero</h4>
+                </div>
+                <p>Si Y₁ = Y₂, no existe variación en el eje conocido (la diferencia de Y es cero), lo que provocaría una indeterminación matemática (división entre cero). En tal caso, la herramienta bloquea el cálculo y avisa inmediatamente al usuario.</p>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- Historial de Interpolaciones Recientes -->
+        <section class="apple-card history-card" id="interp-historial-section">
+          <div class="card-header">
+            <div class="card-title-group">
+              <svg class="sf-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <h3>Historial de Interpolaciones</h3>
+            </div>
+            <button type="button" id="btn-limpiar-historial-interp" class="apple-btn btn-ghost-sm" title="Borrar historial guardado de interpolación">
+              <svg class="sf-icon btn-sm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Borrar</span>
+            </button>
+          </div>
+
+          <div id="interp-historial-lista" class="apple-history-list">
+            <!-- Generado dinámicamente por script.js -->
+          </div>
+        </section>
+
+      </div> <!-- Fin de view-interpolacion -->
 
     </main>
 
