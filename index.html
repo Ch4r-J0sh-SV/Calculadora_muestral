@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Herramienta avanzada para calcular el tamaño de muestra requerido en poblaciones finitas con diseño nativo estilo macOS e iOS.">
-  <title>Calculadora de Tamaño de Muestra — macOS Edition</title>
+  <meta name="description" content="Calculadora y suite inferencial para tamaño de muestra, desviación estándar, interpolación lineal y pruebas de hipótesis con diseño nativo estilo macOS e iOS.">
+  <title>Calculadora Estadística — macOS & iOS Edition V1.0</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -32,7 +32,7 @@
           <path d="M18 9l-5 5-4-4-3 3" />
         </svg>
         <span class="title-text">Calculadora Estadística</span>
-        <span class="version-badge">v0.5</span>
+        <span class="version-badge">v1.0</span>
       </div>
 
       <!-- Interruptor de Modo Oscuro estilo iOS -->
@@ -79,6 +79,13 @@
               <circle cx="20" cy="4" r="2.5"></circle>
             </svg>
             <span>Interpolación Lineal</span>
+          </button>
+          <button type="button" class="macos-tab-btn" role="tab" id="tab-btn-hipotesis" aria-selected="false" aria-controls="view-hipotesis" data-tab="hipotesis">
+            <svg class="sf-icon tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 19h20"></path>
+              <path d="M2 19c3-1 5-3 7-10 1.2-4.2 2-6 3-6s1.8 1.8 3 6c2 7 4 9 7 10"></path>
+            </svg>
+            <span>Pruebas de Hipótesis</span>
           </button>
         </nav>
       </div>
@@ -1228,6 +1235,633 @@
         </section>
 
       </div> <!-- Fin de view-interpolacion -->
+
+      <!-- ================================================================= -->
+      <!-- Vista 4: Pruebas de Hipótesis (Inferencia Paramétrica V1.0)       -->
+      <!-- ================================================================= -->
+      <div class="tab-panel" id="view-hipotesis" role="tabpanel" aria-labelledby="tab-btn-hipotesis" hidden>
+        
+        <!-- Panel Superior: Subpestañas Apple & Presets de Casos Reales -->
+        <section class="apple-card hipo-nav-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <svg class="sf-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              <h2>Contraste y Pruebas de Hipótesis</h2>
+            </div>
+            <span class="card-sublabel">Toma de decisiones bajo incertidumbre</span>
+          </div>
+
+          <!-- Selector de Submódulo (Segmented Control estilo macOS) -->
+          <div class="hipo-subtabs-wrapper">
+            <div class="segmented-control hipo-segmented-subtabs" id="hipo-subtabs" role="tablist" aria-label="Tipo de Contraste">
+              <button type="button" class="segment-btn active" id="subtab-btn-media" data-subtab="media" role="tab" aria-selected="true">
+                <span class="segment-title">Una Media (μ)</span>
+                <span class="segment-subtitle">Selector Z vs t automático</span>
+              </button>
+              <button type="button" class="segment-btn" id="subtab-btn-proporcion" data-subtab="proporcion" role="tab" aria-selected="false">
+                <span class="segment-title">Una Proporción (p)</span>
+                <span class="segment-subtitle">Conteos, % y Complemento</span>
+              </button>
+              <button type="button" class="segment-btn" id="subtab-btn-dos-medias" data-subtab="dos-medias" role="tab" aria-selected="false">
+                <span class="segment-title">Dos Medias (μ₁ − μ₂)</span>
+                <span class="segment-subtitle">A/B Testing y Comparativa</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Presets de Casos Prácticos Reales -->
+          <div class="presets-section hipo-presets-section">
+            <span class="presets-label">Casos reales de estudio y examen:</span>
+            <div class="presets-chips" role="group" aria-label="Casos de hipótesis predefinidos">
+              <button type="button" class="preset-chip active" data-hipo-preset="calidad-media-z">
+                <span>Control Calidad (Media Z, n=50)</span>
+              </button>
+              <button type="button" class="preset-chip" data-hipo-preset="resistencia-media-t">
+                <span>Resistencia (Media t, n=16)</span>
+              </button>
+              <button type="button" class="preset-chip" data-hipo-preset="sla-proporcion">
+                <span>SLA Reclamos (Proporción + Complemento)</span>
+              </button>
+              <button type="button" class="preset-chip" data-hipo-preset="ab-dos-medias">
+                <span>A/B Testing (Cajas de cobro, Dos medias)</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Formulario de Parámetros de Hipótesis -->
+        <section class="apple-card form-card">
+          <form id="form-hipotesis" novalidate>
+            
+            <!-- SECCIÓN 1: Configuración del Contraste (Cola y Significancia) -->
+            <div class="hipo-config-section">
+              <div class="hipo-section-title-row">
+                <span class="hipo-step-badge">Paso 1</span>
+                <h3>Criterio de Decisión y Dirección</h3>
+              </div>
+
+              <div class="hipo-config-grid">
+                <!-- Selector de Sentido / Cola con Lenguaje Cotidiano -->
+                <div class="form-group full-width-group">
+                  <label class="field-label">
+                    Sentido de la Prueba <span class="param-symbol">(Tipo de Cola)</span>
+                  </label>
+                  <div class="segmented-control hipo-cola-control" id="hipo-segmented-cola" role="radiogroup" aria-label="Sentido de la hipótesis">
+                    <button type="button" class="segment-btn active" data-cola="two-sided" role="radio" aria-checked="true">
+                      <span class="segment-headline">Bilateral (≠)</span>
+                      <span class="segment-desc">«¿Ha cambiado? / ¿Difiere? / ¿Lleva razón?»</span>
+                    </button>
+                    <button type="button" class="segment-btn" data-cola="left" role="radio" aria-checked="false">
+                      <span class="segment-headline">Cola Izquierda (&lt;)</span>
+                      <span class="segment-desc">«¿Se redujo? / ¿Es menor que? / Al menos...»</span>
+                    </button>
+                    <button type="button" class="segment-btn" data-cola="right" role="radio" aria-checked="false">
+                      <span class="segment-headline">Cola Derecha (&gt;)</span>
+                      <span class="segment-desc">«¿Aumentó? / ¿Supera? / Como máximo...»</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Selector de Nivel de Confianza vs Significancia -->
+                <div class="form-group full-width-group">
+                  <div class="field-label-split">
+                    <label class="field-label">
+                      Nivel de Confianza vs. Significación <span class="param-symbol">(1−α vs α)</span>
+                    </label>
+                    <span class="field-hint-linked">Valores sincronizados</span>
+                  </div>
+
+                  <!-- Presets Segmented de Alpha -->
+                  <div class="segmented-control" id="hipo-segmented-alpha" role="radiogroup" aria-label="Nivel de significancia">
+                    <button type="button" class="segment-btn" data-alpha="0.10" role="radio" aria-checked="false">
+                      <span class="segment-pct">90% Confianza</span>
+                      <span class="segment-z">α = 0.10</span>
+                    </button>
+                    <button type="button" class="segment-btn active" data-alpha="0.05" role="radio" aria-checked="true">
+                      <span class="segment-pct">95% Confianza</span>
+                      <span class="segment-z">α = 0.05</span>
+                    </button>
+                    <button type="button" class="segment-btn" data-alpha="0.01" role="radio" aria-checked="false">
+                      <span class="segment-pct">99% Confianza</span>
+                      <span class="segment-z">α = 0.01</span>
+                    </button>
+                    <button type="button" class="segment-btn" data-alpha="custom" role="radio" aria-checked="false">
+                      <span class="segment-pct">Personalizado</span>
+                      <span class="segment-z">Manual</span>
+                    </button>
+                  </div>
+
+                  <!-- Controles Sincronizados de Confianza y Significancia -->
+                  <div class="hipo-linked-alpha-row">
+                    <div class="input-suffix-group">
+                      <span class="prefix-pill">Confianza (1−α):</span>
+                      <input type="number" id="hipo-confianza-input" class="apple-input" min="50" max="99.9" step="0.1" value="95">
+                      <span class="suffix-pill">%</span>
+                    </div>
+                    <div class="input-suffix-group">
+                      <span class="prefix-pill">Significancia (α):</span>
+                      <input type="number" id="hipo-alpha-input" class="apple-input" min="0.001" max="0.50" step="0.001" value="0.05">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECCIÓN 2: Campos de Entrada por Submódulo -->
+            <div class="hipo-fields-container">
+              
+              <!-- Submódulo A: Una Media (μ) -->
+              <div class="hipo-subpanel active" id="hipo-panel-media">
+                <div class="hipo-section-title-row">
+                  <span class="hipo-step-badge">Paso 2</span>
+                  <h3>Datos de la Muestra y Población (Una Media)</h3>
+                </div>
+
+                <!-- Callout Inteligente: Selector Automático Z vs t -->
+                <div id="hipo-media-smart-callout" class="apple-callout smart-selector-callout">
+                  <div class="callout-icon-wrap">
+                    <svg class="sf-icon callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
+                  <div class="callout-content">
+                    <strong class="callout-title" id="hipo-media-callout-title">Distribución Seleccionada Automáticamente</strong>
+                    <p class="callout-text" id="hipo-media-callout-text">Cargando criterio inferencial...</p>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <!-- Media Hipotética (μ0) -->
+                  <div class="form-group">
+                    <label for="hipo-media-mu0" class="field-label">
+                      Media Hipotética / Estándar <span class="param-symbol">(μ₀)</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <input type="number" step="any" id="hipo-media-mu0" value="500" required class="apple-input" placeholder="Ej. 500">
+                    </div>
+                    <span id="hipo-media-mu0-error" class="error-message" role="alert"></span>
+                  </div>
+
+                  <!-- Media Muestral Observada (x̄) -->
+                  <div class="form-group">
+                    <label for="hipo-media-xbar" class="field-label">
+                      Media Observada en la Muestra <span class="param-symbol">(x̄)</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <input type="number" step="any" id="hipo-media-xbar" value="503.2" required class="apple-input" placeholder="Ej. 503.2">
+                    </div>
+                    <span id="hipo-media-xbar-error" class="error-message" role="alert"></span>
+                  </div>
+
+                  <!-- Tamaño de Muestra (n) -->
+                  <div class="form-group">
+                    <label for="hipo-media-n" class="field-label">
+                      Tamaño de Muestra <span class="param-symbol">(n)</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <input type="number" min="2" step="1" id="hipo-media-n" value="50" required class="apple-input" placeholder="Ej. 50">
+                    </div>
+                    <span id="hipo-media-n-error" class="error-message" role="alert"></span>
+                  </div>
+
+                  <!-- Origen de la Dispersión (Poblacional vs Muestral) -->
+                  <div class="form-group">
+                    <label class="field-label">
+                      Origen de la Dispersión <span class="param-symbol">(σ vs s)</span>
+                    </label>
+                    <div class="segmented-control" id="hipo-media-origen-control" role="radiogroup">
+                      <button type="button" class="segment-btn active" data-origen="poblacional" role="radio" aria-checked="true">
+                        <span>Poblacional (σ conocida)</span>
+                      </button>
+                      <button type="button" class="segment-btn" data-origen="muestral" role="radio" aria-checked="false">
+                        <span>Muestral (s desconocida)</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Tipo de Medida de Dispersión (Desviación vs Varianza) -->
+                  <div class="form-group">
+                    <label class="field-label">
+                      Formato del Dato <span class="param-symbol">(Desviación vs Varianza)</span>
+                    </label>
+                    <div class="segmented-control" id="hipo-media-tipo-disp-control" role="radiogroup">
+                      <button type="button" class="segment-btn active" data-tipo-disp="desviacion" role="radio" aria-checked="true">
+                        <span>Desviación Estándar</span>
+                      </button>
+                      <button type="button" class="segment-btn" data-tipo-disp="varianza" role="radio" aria-checked="false">
+                        <span>Varianza</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Valor de la Dispersión -->
+                  <div class="form-group">
+                    <label for="hipo-media-disp-val" class="field-label" id="hipo-media-disp-label">
+                      Valor de la Desviación Estándar <span class="param-symbol">(σ o s)</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <input type="number" min="0.0001" step="any" id="hipo-media-disp-val" value="8" required class="apple-input" placeholder="Ej. 8">
+                    </div>
+                    <span id="hipo-media-disp-error" class="error-message" role="alert"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submódulo B: Una Proporción (p) -->
+              <div class="hipo-subpanel" id="hipo-panel-proporcion" hidden>
+                <div class="hipo-section-title-row">
+                  <span class="hipo-step-badge">Paso 2</span>
+                  <h3>Datos de la Proporción y Muestra</h3>
+                </div>
+
+                <!-- Callout de Normalidad para Proporciones -->
+                <div id="hipo-prop-normal-callout" class="apple-callout normal-prop-callout">
+                  <div class="callout-icon-wrap">
+                    <svg class="sf-icon callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                  </div>
+                  <div class="callout-content">
+                    <strong class="callout-title" id="hipo-prop-callout-title">Condición de Normalidad Binomial</strong>
+                    <p class="callout-text" id="hipo-prop-callout-text">Verificando np₀ ≥ 5 y n(1−p₀) ≥ 5...</p>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <!-- Proporción Histórica / Estándar (p0) -->
+                  <div class="form-group">
+                    <label for="hipo-prop-p0" class="field-label">
+                      Proporción Hipotética / Meta <span class="param-symbol">(p₀)</span>
+                    </label>
+                    <div class="input-suffix-group">
+                      <input type="number" min="0.1" max="99.9" step="any" id="hipo-prop-p0" value="8" required class="apple-input" placeholder="Ej. 8 para 8%">
+                      <span class="suffix-pill">%</span>
+                    </div>
+                    <span id="hipo-prop-p0-error" class="error-message" role="alert"></span>
+                  </div>
+
+                  <!-- Tamaño de Muestra (n) -->
+                  <div class="form-group">
+                    <label for="hipo-prop-n" class="field-label">
+                      Tamaño de Muestra <span class="param-symbol">(n)</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <input type="number" min="5" step="1" id="hipo-prop-n" value="400" required class="apple-input" placeholder="Ej. 400">
+                    </div>
+                    <span id="hipo-prop-n-error" class="error-message" role="alert"></span>
+                  </div>
+
+                  <!-- Selector Modo de Entrada de Éxitos -->
+                  <div class="form-group full-width-group">
+                    <label class="field-label">
+                      Modalidad de Ingreso de Éxitos Observados
+                    </label>
+                    <div class="segmented-control" id="hipo-prop-modo-control" role="radiogroup">
+                      <button type="button" class="segment-btn active" data-modo-obs="casos" role="radio" aria-checked="true">
+                        <span>Número de Casos Directos (x de n)</span>
+                      </button>
+                      <button type="button" class="segment-btn" data-modo-obs="porcentaje" role="radio" aria-checked="false">
+                        <span>Porcentaje Muestral Observado (p̂ %)</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Campo de Valor Observado (x o p̂) -->
+                  <div class="form-group full-width-group">
+                    <label for="hipo-prop-obs-val" class="field-label" id="hipo-prop-obs-label">
+                      Casos Observados en la Muestra <span class="param-symbol">(x)</span>
+                    </label>
+                    <div class="input-suffix-group" id="hipo-prop-obs-group">
+                      <input type="number" min="0" step="any" id="hipo-prop-obs-val" value="348" required class="apple-input" placeholder="Ej. 348">
+                      <span class="suffix-pill" id="hipo-prop-obs-suffix">casos</span>
+                    </div>
+                    <span id="hipo-prop-obs-error" class="error-message" role="alert"></span>
+                  </div>
+
+                  <!-- Switch de Complemento (Para casos de eventos contrarios) -->
+                  <div class="form-group full-width-group">
+                    <div class="hipo-complemento-card">
+                      <div class="complemento-toggle-row">
+                        <label class="ios-switch-label" for="hipo-prop-complemento-switch">
+                          <input type="checkbox" id="hipo-prop-complemento-switch" class="sr-only">
+                          <span class="custom-switch-slider"></span>
+                          <span class="switch-text-label">El dato ingresado representa el evento contrario (calcular complemento: x' = n − x)</span>
+                        </label>
+                      </div>
+                      <div class="complemento-feedback" id="hipo-prop-complemento-info">
+                        <svg class="sf-icon comp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M16 3h5v5"></path>
+                          <path d="M4 20L21 3"></path>
+                          <path d="M21 16v5h-5"></path>
+                          <path d="M15 15l6 6"></path>
+                          <path d="M4 4l5 5"></path>
+                        </svg>
+                        <span id="hipo-prop-complemento-text">Modo estándar: Se evalúan directamente los casos ingresados.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submódulo C: Dos Medias (μ1 − μ2) -->
+              <div class="hipo-subpanel" id="hipo-panel-dos-medias" hidden>
+                <div class="hipo-section-title-row">
+                  <span class="hipo-step-badge">Paso 2</span>
+                  <h3>Comparación de Dos Poblaciones (A/B Testing)</h3>
+                </div>
+
+                <div class="hipo-two-groups-grid">
+                  <!-- Tarjeta Grupo 1 -->
+                  <div class="hipo-group-card group-a-card">
+                    <div class="group-card-header">
+                      <span class="group-badge group-badge-a">Grupo 1 (Control / Sistema A)</span>
+                      <span class="group-sub">Línea base</span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="hipo-m1-xbar" class="field-label">
+                        Media Muestral 1 <span class="param-symbol">(x̄₁)</span>
+                      </label>
+                      <input type="number" step="any" id="hipo-m1-xbar" value="14.5" required class="apple-input" placeholder="Ej. 14.5">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="field-label">Formato de Dispersión 1</label>
+                      <div class="segmented-control" id="hipo-m1-disp-tipo-control" role="radiogroup">
+                        <button type="button" class="segment-btn active" data-m1-tipo="desviacion" role="radio" aria-checked="true">
+                          <span>Desv. (s₁)</span>
+                        </button>
+                        <button type="button" class="segment-btn" data-m1-tipo="varianza" role="radio" aria-checked="false">
+                          <span>Var. (s₁²)</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="hipo-m1-disp-val" class="field-label" id="hipo-m1-disp-label">
+                        Desviación Estándar 1 <span class="param-symbol">(s₁)</span>
+                      </label>
+                      <input type="number" min="0.0001" step="any" id="hipo-m1-disp-val" value="2.8" required class="apple-input" placeholder="Ej. 2.8">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="hipo-m1-n" class="field-label">
+                        Tamaño Muestral 1 <span class="param-symbol">(n₁)</span>
+                      </label>
+                      <input type="number" min="2" step="1" id="hipo-m1-n" value="45" required class="apple-input" placeholder="Ej. 45">
+                    </div>
+                  </div>
+
+                  <!-- Tarjeta Grupo 2 -->
+                  <div class="hipo-group-card group-b-card">
+                    <div class="group-card-header">
+                      <span class="group-badge group-badge-b">Grupo 2 (Tratamiento / Sistema B)</span>
+                      <span class="group-sub">Propuesta nueva</span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="hipo-m2-xbar" class="field-label">
+                        Media Muestral 2 <span class="param-symbol">(x̄₂)</span>
+                      </label>
+                      <input type="number" step="any" id="hipo-m2-xbar" value="12.2" required class="apple-input" placeholder="Ej. 12.2">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="field-label">Formato de Dispersión 2</label>
+                      <div class="segmented-control" id="hipo-m2-disp-tipo-control" role="radiogroup">
+                        <button type="button" class="segment-btn active" data-m2-tipo="desviacion" role="radio" aria-checked="true">
+                          <span>Desv. (s₂)</span>
+                        </button>
+                        <button type="button" class="segment-btn" data-m2-tipo="varianza" role="radio" aria-checked="false">
+                          <span>Var. (s₂²)</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="hipo-m2-disp-val" class="field-label" id="hipo-m2-disp-label">
+                        Desviación Estándar 2 <span class="param-symbol">(s₂)</span>
+                      </label>
+                      <input type="number" min="0.0001" step="any" id="hipo-m2-disp-val" value="2.5" required class="apple-input" placeholder="Ej. 2.5">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="hipo-m2-n" class="field-label">
+                        Tamaño Muestral 2 <span class="param-symbol">(n₂)</span>
+                      </label>
+                      <input type="number" min="2" step="1" id="hipo-m2-n" value="40" required class="apple-input" placeholder="Ej. 40">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Diferencia Hipotética D0 -->
+                <div class="form-group full-width-group" style="margin-top: 10px;">
+                  <label for="hipo-dos-medias-d0" class="field-label">
+                    Diferencia Hipotética en H₀ <span class="param-symbol">(D₀ = μ₁ − μ₂)</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="number" step="any" id="hipo-dos-medias-d0" value="0" required class="apple-input" placeholder="Ej. 0 (hipótesis de igualdad)">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Acciones del Formulario de Hipótesis -->
+            <div class="form-actions">
+              <button type="submit" id="btn-calcular-hipo" class="apple-btn btn-primary">
+                <svg class="sf-icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                <span>Calcular prueba de hipótesis</span>
+              </button>
+              <button type="button" id="btn-reset-hipo" class="apple-btn btn-secondary" title="Restablecer valores predeterminados">
+                <svg class="sf-icon btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                  <path d="M3 3v5h5"/>
+                </svg>
+                <span>Restablecer</span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Panel de Resultados de Hipótesis -->
+        <section id="hipo-resultado" class="apple-card result-card hipo-result-card" aria-live="polite">
+          <div class="result-header">
+            <div class="result-status-indicator">
+              <span class="status-dot status-dot-hipo" id="hipo-status-dot" aria-hidden="true"></span>
+              <span class="status-text" id="hipo-result-status-title">Resolución del Contraste</span>
+            </div>
+            <button type="button" id="btn-copiar-hipo" class="apple-btn btn-action-sm" title="Copiar dictamen y resolución completa">
+              <svg class="sf-icon btn-sm-icon" id="copy-icon-hipo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span id="copy-btn-text-hipo">Copiar</span>
+            </button>
+          </div>
+
+          <!-- 1. Gran Dictamen Ejecutivo y Conclusión de Negocio -->
+          <div class="hipo-verdict-banner" id="hipo-verdict-banner">
+            <div class="verdict-top-bar">
+              <span class="verdict-pill-badge" id="hipo-decision-badge">RECHAZAR H₀</span>
+              <span class="verdict-significance-tag" id="hipo-decision-alpha-tag">Nivel de significación α = 0.05 (Confianza 95%)</span>
+            </div>
+            <div class="verdict-statements-grid">
+              <div class="verdict-statement-box technical-box">
+                <div class="statement-header">
+                  <svg class="sf-icon statement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <h4>Decisión Técnica y Estadística</h4>
+                </div>
+                <p id="hipo-decision-tecnica" class="statement-text">Calculando...</p>
+              </div>
+
+              <div class="verdict-statement-box business-box">
+                <div class="statement-header">
+                  <svg class="sf-icon statement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="12 8 8 12 12 16 16 12 12 8"></polygon>
+                  </svg>
+                  <h4>Interpretación de Negocio / Recomendación</h4>
+                </div>
+                <p id="hipo-decision-negocio" class="statement-text">Calculando...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Doble Criterio de Decisión: Valor Crítico + Valor p (Cuadrícula de Métricas) -->
+          <div class="hipo-metrics-grid">
+            <div class="metric-card">
+              <span class="metric-label" id="hipo-lbl-stat-cal">Estadístico Calculado (Z_cal)</span>
+              <span class="metric-value" id="hipo-stat-val">+2.530</span>
+              <span class="metric-sub" id="hipo-stat-sub">Muestra observada</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label" id="hipo-lbl-crit-val">Valor Crítico de Tabla</span>
+              <span class="metric-value" id="hipo-crit-val">±1.960</span>
+              <span class="metric-sub" id="hipo-crit-sub">Frontera de rechazo</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Valor p (p-value)</span>
+              <span class="metric-value" id="hipo-p-val">0.0114</span>
+              <span class="metric-sub" id="hipo-p-sub">p &lt; α (Significativo)</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Error Estándar (SE)</span>
+              <span class="metric-value" id="hipo-se-val">1.1314</span>
+              <span class="metric-sub" id="hipo-se-sub">Dispersión del estimador</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Ubicación Muestral</span>
+              <span class="metric-value status-highlight-val" id="hipo-region-val">Región Crítica</span>
+              <span class="metric-sub" id="hipo-region-sub">Cae en zona de rechazo</span>
+            </div>
+          </div>
+
+          <!-- 3. Visualización Gráfica: La Campana Dinámica (Canvas Retina) -->
+          <div class="hipo-chart-container">
+            <div class="hipo-chart-header">
+              <div class="chart-title-group">
+                <svg class="sf-icon chart-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 20h18"></path>
+                  <path d="M3 20c2-1 4-3 6-9 1-3 2-6 3-6s2 3 3 6c2 7 4 9 7 10"></path>
+                </svg>
+                <h3>Distribución Muestral y Regiones de Rechazo</h3>
+              </div>
+              <span class="chart-badge" id="hipo-chart-distribution-badge">Distribución Normal Estándar Z</span>
+            </div>
+
+            <div class="canvas-wrapper">
+              <canvas id="canvas-hipotesis" width="760" height="340" aria-label="Gráfico de distribución y regiones de rechazo"></canvas>
+            </div>
+
+            <!-- Leyenda Gráfica Interactiva -->
+            <div class="hipo-chart-legend">
+              <div class="legend-item">
+                <span class="legend-swatch swatch-acceptance"></span>
+                <span class="legend-text">Zona de No Rechazo (<strong id="leg-confianza-text">95%</strong>)</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-swatch swatch-rejection"></span>
+                <span class="legend-text">Región Crítica de Rechazo (<strong id="leg-alpha-text">α = 0.05</strong>)</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-swatch swatch-calculated"></span>
+                <span class="legend-text">Estadístico Muestral (<strong id="leg-calc-text">Z_cal = +2.53</strong>)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Desglose Metodológico y Procedimiento Paso a Paso -->
+          <div class="hipo-procedure-wrapper">
+            <details id="hipo-procedimiento-details" class="apple-disclosure" open>
+              <summary class="disclosure-header">
+                <div class="disclosure-title-group">
+                  <svg class="sf-icon disclosure-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                  <h3>Desglose Paso a Paso de la Prueba de Hipótesis</h3>
+                </div>
+                <span class="disclosure-badge">Rigor Inferencial</span>
+              </summary>
+
+              <div class="disclosure-content">
+                <!-- Tarjetas de Pasos -->
+                <div class="hipo-steps-list" id="hipo-steps-container">
+                  <!-- Generado dinámicamente -->
+                </div>
+
+                <!-- Procedimiento en Texto Plano Listo para Copiar -->
+                <div class="plain-text-procedure-wrapper">
+                  <div class="procedure-box-header">
+                    <span class="procedure-box-title">Formato de Resumen para Reportes o Tareas</span>
+                    <button type="button" id="btn-copiar-resumen-texto" class="apple-btn btn-ghost-sm">
+                      <svg class="sf-icon btn-sm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                      </svg>
+                      <span>Copiar Texto</span>
+                    </button>
+                  </div>
+                  <pre class="plain-text-code" id="hipo-plain-text-code">Generando procedimiento detallado...</pre>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <!-- 5. Historial de Pruebas Recientes -->
+          <div class="hipo-historial-wrapper" id="hipo-historial-section">
+            <div class="card-header" style="margin-top: 10px; margin-bottom: 8px;">
+              <div class="card-title-group">
+                <svg class="sf-icon card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <h3>Historial de Pruebas de Hipótesis Recientes</h3>
+              </div>
+              <button type="button" id="btn-limpiar-historial-hipo" class="apple-btn btn-ghost-sm" title="Borrar historial guardado">
+                <svg class="sf-icon btn-sm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span>Borrar</span>
+              </button>
+            </div>
+            <div id="hipo-historial-lista" class="apple-history-list">
+              <!-- Generado dinámicamente -->
+            </div>
+          </div>
+
+        </section>
+
+      </div> <!-- Fin de view-hipotesis -->
 
     </main>
 

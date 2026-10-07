@@ -1895,3 +1895,647 @@ body {
   background-color: var(--system-green);
 }
 
+/* ==========================================================================
+   Módulo 4: Pruebas de Hipótesis (V1.0 — macOS & iOS Inferencia)
+   ========================================================================== */
+
+/* Subpestañas del Módulo de Hipótesis */
+.hipo-nav-card {
+  margin-bottom: 14px;
+}
+
+.hipo-subtabs-wrapper {
+  margin-bottom: 12px;
+}
+
+.hipo-segmented-subtabs {
+  display: flex;
+  gap: 4px;
+  background-color: var(--system-secondary-fill);
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.hipo-segmented-subtabs .segment-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.hipo-segmented-subtabs .segment-title {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--label-primary);
+}
+
+.hipo-segmented-subtabs .segment-subtitle {
+  font-size: 0.71rem;
+  color: var(--label-secondary);
+}
+
+.hipo-segmented-subtabs .segment-btn.active .segment-title {
+  color: var(--system-blue);
+}
+
+/* Presets de Hipótesis */
+.hipo-presets-section {
+  border-top: 1px solid var(--separator);
+  padding-top: 10px;
+  margin-top: 4px;
+}
+
+/* Sección de Configuración de Criterio */
+.hipo-config-section {
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.hipo-section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.hipo-step-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background-color: var(--system-blue-tint);
+  color: var(--system-blue);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 122, 255, 0.2);
+}
+
+.hipo-section-title-row h3 {
+  font-size: 0.90rem;
+  font-weight: 600;
+  color: var(--label-primary);
+}
+
+.hipo-config-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Control de Cola en Lenguaje Cotidiano */
+.hipo-cola-control {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background-color: var(--segmented-bg);
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.hipo-cola-control .segment-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.hipo-cola-control .segment-headline {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--label-primary);
+}
+
+.hipo-cola-control .segment-desc {
+  font-size: 0.71rem;
+  color: var(--label-secondary);
+  line-height: 1.25;
+}
+
+.hipo-cola-control .segment-btn.active .segment-headline {
+  color: var(--system-blue);
+}
+
+/* Controles Enlazados de Confianza y Significancia */
+.field-label-split {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.field-hint-linked {
+  font-size: 0.73rem;
+  font-weight: 500;
+  color: var(--system-blue);
+}
+
+.hipo-linked-alpha-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.prefix-pill {
+  font-size: 0.77rem;
+  font-weight: 600;
+  color: var(--label-secondary);
+  padding: 0 10px;
+  background-color: var(--system-secondary-fill);
+  display: flex;
+  align-items: center;
+  border-radius: 8px 0 0 8px;
+  border: 1px solid var(--macos-card-border);
+  border-right: none;
+  white-space: nowrap;
+}
+
+.hipo-linked-alpha-row .input-suffix-group .apple-input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Callouts Informativos Inteligentes */
+.apple-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  background-color: var(--system-blue-tint);
+  border: 1px solid rgba(0, 122, 255, 0.22);
+  transition: all 0.2s ease;
+}
+
+.callout-icon-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.callout-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--system-blue);
+  stroke-width: 2.2;
+}
+
+.callout-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.callout-title {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--label-primary);
+}
+
+.callout-text {
+  font-size: 0.79rem;
+  color: var(--label-secondary);
+  line-height: 1.4;
+}
+
+/* Tarjeta de Complemento de Proporciones */
+.hipo-complemento-card {
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ios-switch-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.switch-text-label {
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--label-primary);
+}
+
+.custom-switch-slider {
+  position: relative;
+  width: 44px;
+  height: 26px;
+  background-color: var(--system-fill);
+  border-radius: 20px;
+  transition: background-color 0.25s ease;
+  flex-shrink: 0;
+}
+
+.custom-switch-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+input:checked + .custom-switch-slider {
+  background-color: var(--system-green);
+}
+
+input:checked + .custom-switch-slider::after {
+  transform: translateX(18px);
+}
+
+.complemento-feedback {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.77rem;
+  color: var(--label-secondary);
+  line-height: 1.35;
+}
+
+.comp-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--system-blue);
+}
+
+/* Tarjetas de A/B Testing (Dos Medias) */
+.hipo-two-groups-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.hipo-group-card {
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.group-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.group-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+
+.group-badge-a {
+  background-color: var(--system-blue-tint);
+  color: var(--system-blue);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+}
+
+.group-badge-b {
+  background-color: rgba(175, 82, 222, 0.15);
+  color: #af52de;
+  border: 1px solid rgba(175, 82, 222, 0.25);
+}
+
+.group-sub {
+  font-size: 0.72rem;
+  color: var(--label-tertiary);
+}
+
+/* ==========================================================================
+   Panel de Resultados de Hipótesis (Dictamen Ejecutivo y Métricas)
+   ========================================================================== */
+.hipo-result-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.status-dot-hipo {
+  background-color: var(--system-blue);
+  box-shadow: 0 0 8px rgba(0, 122, 255, 0.45);
+}
+
+/* Gran Dictamen Ejecutivo */
+.hipo-verdict-banner {
+  border-radius: 14px;
+  padding: 16px;
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+}
+
+.verdict-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.verdict-pill-badge {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+}
+
+.verdict-pill-badge.reject {
+  background-color: var(--system-red);
+  color: #ffffff;
+  box-shadow: 0 4px 14px var(--system-red-tint);
+}
+
+.verdict-pill-badge.accept {
+  background-color: var(--system-green);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(52, 199, 89, 0.3);
+}
+
+.verdict-significance-tag {
+  font-size: 0.80rem;
+  font-weight: 500;
+  color: var(--label-secondary);
+}
+
+.verdict-statements-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.verdict-statement-box {
+  background-color: var(--macos-card-bg);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.statement-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 6px;
+}
+
+.statement-icon {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.2;
+}
+
+.technical-box .statement-icon {
+  color: var(--system-blue);
+}
+
+.business-box .statement-icon {
+  color: var(--system-orange);
+}
+
+.statement-header h4 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--label-primary);
+}
+
+.statement-text {
+  font-size: 0.81rem;
+  color: var(--label-secondary);
+  line-height: 1.45;
+}
+
+/* Cuadrícula de Métricas Clave de Decisión */
+.hipo-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.status-highlight-val {
+  font-weight: 700 !important;
+}
+
+.status-highlight-val.reject {
+  color: var(--system-red) !important;
+}
+
+.status-highlight-val.accept {
+  color: var(--system-green) !important;
+}
+
+/* Gráfico de la Campana Dinámica */
+.hipo-chart-container {
+  border-radius: 14px;
+  padding: 14px 16px;
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+}
+
+.hipo-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.chart-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-title-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--system-blue);
+}
+
+.chart-title-group h3 {
+  font-size: 0.90rem;
+  font-weight: 600;
+  color: var(--label-primary);
+}
+
+.chart-badge {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background-color: var(--system-secondary-fill);
+  color: var(--label-secondary);
+}
+
+#canvas-hipotesis {
+  width: 100%;
+  height: 340px;
+  display: block;
+  border-radius: 8px;
+}
+
+.hipo-chart-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.swatch-acceptance {
+  background-color: var(--system-blue);
+}
+
+.swatch-rejection {
+  background-color: var(--system-red);
+}
+
+.swatch-calculated {
+  background-color: var(--system-orange);
+}
+
+/* Lista de Pasos Inferenciales */
+.hipo-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.hipo-step-card {
+  background-color: var(--macos-card-inset);
+  border: 1px solid var(--macos-card-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.hipo-step-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.step-num-badge {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--system-blue);
+  color: #ffffff;
+  font-size: 0.73rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hipo-step-title {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--label-primary);
+}
+
+.hipo-step-body {
+  font-size: 0.81rem;
+  color: var(--label-secondary);
+  line-height: 1.45;
+}
+
+.math-eq-callout {
+  font-family: var(--font-apple-mono);
+  font-size: 0.81rem;
+  background-color: var(--system-fill);
+  padding: 7px 11px;
+  border-radius: 6px;
+  margin-top: 6px;
+  color: var(--label-primary);
+  line-height: 1.4;
+  overflow-x: auto;
+}
+
+/* Responsive queries para Hipótesis */
+@media (max-width: 680px) {
+  .macos-tabs-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+  }
+
+  .macos-tabs-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .macos-tab-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 7px 11px;
+    font-size: 0.81rem;
+  }
+
+  .hipo-segmented-subtabs {
+    flex-direction: column;
+  }
+
+  .hipo-cola-control {
+    grid-template-columns: 1fr;
+  }
+
+  .hipo-linked-alpha-row {
+    grid-template-columns: 1fr;
+  }
+
+  .hipo-two-groups-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .verdict-statements-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hipo-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #canvas-hipotesis {
+    height: 280px;
+  }
+}
+
