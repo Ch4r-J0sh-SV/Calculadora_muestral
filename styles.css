@@ -2539,3 +2539,12 @@ input:checked + .custom-switch-slider::after {
   }
 }
 
+
+/* Derechos de autor (V1.1) */
+.copyright-footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--label-secondary, #8e8e93);
+  padding: 12px 16px 16px;
+  margin: 0;
+}

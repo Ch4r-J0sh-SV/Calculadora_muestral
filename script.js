@@ -1,5 +1,5 @@
 /**
- * Calculadora Estadística — macOS & iOS Edition — V1.0
+ * Calculadora Estadística — macOS & iOS Edition — V1.1
  * Módulo 1: Tamaño de Muestra para Poblaciones Finitas
  * Módulo 2: Desviación Estándar Poblacional y Muestral con Gráficos Interactivos
  * Módulo 3: Herramienta de Interpolación Lineal para Tablas Estadísticas
